@@ -360,7 +360,6 @@ class Component extends DCLogic {
       const wrap = document.getElementById("zv-stack-wrap");
       const s3 = document.getElementById("servicos");
       if (!s2 || !wrap || !s3) return;
-      const strip = 32;
       // Timeline com scroll livre: Estrategia em fluxo normal (sem sticky) e
       // Servicos logo abaixo, sem sobreposicao. A subida de Servicos e feita por
       // um snap dedicado (_maybeRiseServicos), nao pelo empilhamento sticky.
@@ -391,7 +390,6 @@ class Component extends DCLogic {
       if (gEl) this._stackRO.observe(gEl);
     }
     // ===== Scroll-snap: SÓ no trecho Hero <-> Seção 2 <-> Seção 3 =====
-    this._snapIndex = 0;
     this._snapAnimating = false;
     this._wheelAccum = 0;
     this._touchDelta = 0;
@@ -400,7 +398,6 @@ class Component extends DCLogic {
       const s2 = document.getElementById("estrategia");
       const hero = document.getElementById("inicio");
       if (!wrap || !s2) return [0, 0, 0];
-      const strip = 32;
       const sy = window.scrollY;
       // gTop: posição estável do topo do Globo (Hero não é sticky). Globo agora é
       // sticky, então seu próprio rect não serve de referência quando "grudado".
@@ -443,7 +440,6 @@ class Component extends DCLogic {
     };
     this._snapGo = (target, stops) => {
       this._snapAnimating = true;
-      this._snapIndex = target;
       if (target === 0) { this._globeState = 3; this._renderGlobeState(3); }
       const dur = this.props.scrollSnapTransitionDuration ?? 750;
       this._snapTween(window.scrollY, stops[target], dur, () => {
@@ -813,7 +809,7 @@ class Component extends DCLogic {
     const il = document.getElementById("zv-footer-insta-link");
     if (il) il.href = instaUrl;
     // Hover states (reassigned each update with latest tweak values)
-    [["zv-footer-email", true], ["zv-footer-phone", true], ["zv-footer-insta-handle", true], ["zv-footer-insta-link", false]].forEach(([id, isText]) => {
+    ["zv-footer-email", "zv-footer-phone", "zv-footer-insta-handle", "zv-footer-insta-link"].forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
       el.style.color = linkColor;
@@ -1882,7 +1878,6 @@ class Component extends DCLogic {
     window.removeEventListener("touchend", this._onTouchEnd);
     if (this._snapRAF) cancelAnimationFrame(this._snapRAF);
     if (this._navRAF) cancelAnimationFrame(this._navRAF);
-    if (this._servRAF) cancelAnimationFrame(this._servRAF);
     clearTimeout(this._servTimer);
     clearTimeout(this._globeFastT);
     clearTimeout(this._globeBlockT);
