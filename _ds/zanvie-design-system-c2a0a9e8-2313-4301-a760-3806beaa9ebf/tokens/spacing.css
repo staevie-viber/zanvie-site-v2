@@ -1,0 +1,40 @@
+:root {
+  /* ---- Spacing scale ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* ---- Radii ---- */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* ---- Shadows ---- */
+  --shadow-sm: 0 2px 8px rgba(10, 10, 11, 0.12);
+  --shadow-md: 0 8px 24px rgba(10, 10, 11, 0.16);
+  --shadow-lg: 0 20px 48px rgba(10, 10, 11, 0.24);
+  --shadow-glow-purple: 0 0 40px rgba(124, 92, 252, 0.35);
+  --shadow-glow-orange: 0 0 40px rgba(255, 90, 46, 0.3);
+
+  /* ---- Blur (glass elements) ---- */
+  --blur-glass: 18px;
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --duration-fast: 150ms; /* @kind other */
+  --duration-base: 260ms; /* @kind other */
+  --duration-slow: 420ms; /* @kind other */
+
+  /* ---- Layout ---- */
+  --container-max: 1200px;
+  --divider-width: 3px;
+}

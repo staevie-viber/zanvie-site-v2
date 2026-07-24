@@ -1,0 +1,70 @@
+:root {
+  /* ---- Base palette ---- */
+  --purple-500: #7c5cfc;
+  --purple-600: #6a45f0;
+  --purple-400: #9c82fd;
+  --purple-100: #ece7ff;
+
+  --orange-500: #ff5a2e;
+  --orange-600: #e6431a;
+  --orange-400: #ff8259;
+  --orange-100: #ffe6dc;
+
+  --black-900: #0a0a0b;
+  --black-800: #131315;
+  --black-700: #1c1c1f;
+  --black-600: #2a2a2e;
+
+  --white-000: #ffffff;
+  --stone-100: #f6f4f1;
+  --stone-200: #ece8e2;
+  --stone-400: #b8b2a8;
+  --stone-600: #7a746a;
+
+  /* ---- Gradient ---- */
+  --gradient-brand: linear-gradient(90deg, var(--purple-500) 0%, var(--orange-500) 100%);
+
+  /* ---- Semantic: surfaces ---- */
+  --surface-dark: var(--black-900);
+  --surface-dark-raised: var(--black-800);
+  --surface-light: var(--white-000);
+  --surface-light-raised: var(--stone-100);
+  --surface-glass-on-dark: rgba(255, 255, 255, 0.08);
+  --surface-glass-on-light: rgba(255, 255, 255, 0.55);
+  --surface-glass-border-dark: rgba(255, 255, 255, 0.16);
+  --surface-glass-border-light: rgba(10, 10, 11, 0.10);
+
+  /* ---- Semantic: text ---- */
+  --text-on-dark-primary: #ffffff;
+  --text-on-dark-secondary: rgba(255, 255, 255, 0.68);
+  --text-on-dark-tertiary: rgba(255, 255, 255, 0.44);
+  --text-on-light-primary: var(--black-900);
+  --text-on-light-secondary: rgba(10, 10, 11, 0.64);
+  --text-on-light-tertiary: rgba(10, 10, 11, 0.40);
+
+  --text-accent-purple: var(--purple-500);
+  --text-accent-orange: var(--orange-500);
+
+  /* ---- Semantic: borders ---- */
+  --border-on-dark: rgba(255, 255, 255, 0.14);
+  --border-on-light: rgba(10, 10, 11, 0.12);
+
+  /* ---- Semantic: interactive ---- */
+  --action-primary-bg: var(--orange-500);
+  --action-primary-bg-hover: var(--orange-600);
+  --action-primary-text: #ffffff;
+
+  --action-secondary-bg: transparent;
+  --action-secondary-border: rgba(255, 255, 255, 0.4);
+  --action-secondary-text: #ffffff;
+
+  --action-whatsapp-bg: #25d366;
+  --action-whatsapp-bg-hover: #1fb958;
+  --action-whatsapp-text: #0a0a0b;
+
+  --focus-ring: var(--purple-400);
+
+  /* ---- Divider accents ---- */
+  --divider-purple: var(--purple-500);
+  --divider-orange: var(--orange-500);
+}

@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/zanvie-design-system-c2a0a9e8-2313-4301-a760-3806beaa9ebf/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/zanvie-design-system-c2a0a9e8-2313-4301-a760-3806beaa9ebf/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/zanvie-design-system-c2a0a9e8-2313-4301-a760-3806beaa9ebf/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/zanvie-design-system-c2a0a9e8-2313-4301-a760-3806beaa9ebf/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/zanvie-design-system-c2a0a9e8-2313-4301-a760-3806beaa9ebf/styles.css">
+  <script src="_ds/zanvie-design-system-c2a0a9e8-2313-4301-a760-3806beaa9ebf/_ds_bundle.js"></script>
+  <script src="https://unpkg.com/three@0.155.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&amp;display=swap">
+  <style>
+    html { scroll-behavior: auto; }
+    body { margin: 0; background: var(--black-900); }
+    a { color: var(--purple-500); text-decoration: none; }
+    a:hover { color: var(--orange-500); }
+    @keyframes zv-fade-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #zv-navpill::-webkit-scrollbar { display: none; }
+  </style>
+</helmet>
+
+<!-- ============ NAVBAR (fixed; hides when Section 2 covers the Hero) ============ -->
+<nav id="zv-navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 60; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transform: {{ navTransform }}; transition: transform 0.4s var(--ease-standard);">
+  <div style="max-width: var(--container-max); margin: 0 auto; padding: 0 32px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+    <a href="#inicio" style="display: flex; align-items: center;">
+      <img id="zv-logo-img" src="assets/logo-zanvie-white.png" alt="Zanvie — Publicidade e Tráfego Pago" style="height: 169px; width: 172px; display: block">
+    </a>
+    <a id="zv-navbar-cta" href="{{ waHref }}" target="_blank" rel="noopener" style="display: flex; align-items: center;">
+      <span id="zv-wa-full" style="display: inline-flex; align-items: center;">
+        <x-import component-from-global-scope="ZanvieDesignSystem_c2a0a9.Button" variant="primary" size="sm" hint-size="180px,40px">Falar no WhatsApp</x-import>
+      </span>
+      <span id="zv-wa-circle" role="img" aria-label="Falar no WhatsApp" style="display: none; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 999px; background: #ff5a2e; color: #ffffff;">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"></path></svg>
+      </span>
+    </a>
+  </div>
+</nav>
+
+<!-- ============ NAVIGATION PILL (independente da barra branca; sempre visível) ============ -->
+<nav id="zv-navpill" aria-label="Navegação principal" style="position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 70; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; max-width: calc(100vw - 20px); background: rgba(0,0,0,0.5); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+  <a id="zv-pill-1" href="#inicio" style="display: block; padding: 7px 16px; border-radius: 999px; white-space: nowrap; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.01em; background: {{ pillInicioBg }}; color: {{ pillInicioColor }}; transition: background 0.25s var(--ease-standard), color 0.25s var(--ease-standard);" style-hover="background: rgba(255,255,255,0.12);">Início</a>
+  <a id="zv-pill-2" href="#servicos" style="display: block; padding: 7px 16px; border-radius: 999px; white-space: nowrap; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.01em; background: {{ pillServicosBg }}; color: {{ pillServicosColor }}; transition: background 0.25s var(--ease-standard), color 0.25s var(--ease-standard);" style-hover="background: rgba(255,255,255,0.12);">Serviços</a><a id="zv-pill-3" href="#contato" style="display: block; padding: 7px 16px; border-radius: 999px; white-space: nowrap; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.01em; background: {{ pillContatoBg }}; color: {{ pillContatoColor }}; transition: background 0.25s var(--ease-standard), color 0.25s var(--ease-standard);" style-hover="background: rgba(255,255,255,0.12);">Entre em contato</a>
+  
+</nav>
+
+<!-- ============ SEÇÃO 1 — HERO (foto fixa em parallax; exclusivo desta seção) ============ -->
+<section id="inicio" data-screen-label="Hero" style="position: relative; min-height: var(--zv-app-vh, 100vh); display: flex; align-items: center;">
+  <div style="position: absolute; inset: 0; z-index: 0; overflow: hidden;" aria-hidden="true">
+    <div id="zv-hero-photo" style="position: absolute; inset: -24px; background: url('assets/hero-bg-escritorio.png') center / cover no-repeat; filter: blur(4px);"></div>
+    <div id="zv-hero-overlay" style="position: absolute; inset: 0; background: linear-gradient(90deg, #D0CCBEEB, #FFFFFFEB, #FFFFFFEB, rgba(255,255,255,0) 62%)"></div>
+  </div>
+  <div style="position: relative; z-index: 1; width: 100%; max-width: var(--container-max); margin: 0 auto; padding: 140px 32px 96px;">
+    <div style="max-width: 680px; display: flex; flex-direction: column; align-items: flex-start; gap: 28px; animation: zv-fade-up 0.9s var(--ease-standard) both;">
+      
+      <p id="zv-hero-sub" style="margin: 0; max-width: 520px; font-family: onest; font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 400; color: var(--black-900); text-wrap: pretty"><br></p>
+      <h1 id="zv-hero-h1" style="margin: 0; font-family: var(--font-display); font-size: var(--display-xl-size); line-height: var(--display-xl-line); font-weight: 700; color: #000000; text-wrap: pretty">Somos <span id="zv-hero-hl1" style="color: rgb(255, 90, 46);">Zanv<span style="position: relative; display: inline-block;">ı<span id="zv-hero-hl1-dot" aria-hidden="true" style="position: absolute; top: 0.13em; left: 50%; transform: translateX(-50%); width: 0.13em; height: 0.13em; border-radius: 50%; background: rgb(255, 90, 46);"></span></span>e</span>.<br>Somos quem constrói <span id="zv-hero-hl2" style="color: var(--purple-600)">seu caminho até o cliente</span>.</h1><p id="zv-hero-sub" style="margin: 0; max-width: 520px; font-family: onest; font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 400; color: var(--black-900); text-wrap: pretty; align-self: flex-start">Criativos, sites e tráfego pago andando lado-a-lado para te fazer crescer</p>
+      <a id="zv-hero-cta" href="{{ waHref }}" target="_blank" rel="noopener" style="margin-top: 8px;">
+        <x-import component-from-global-scope="ZanvieDesignSystem_c2a0a9.Button" variant="primary" size="lg" hint-size="220px,54px" style="font-family: onest; font-size: 18px">Quero uma proposta</x-import>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SEÇÃO GLOBO — globo 3D wireframe girando ao fundo ============ -->
+<!-- Spacer relativo dá ao sticky do Globo um bloco-contêiner alto (altura via JS) -->
+<div id="zv-globe-wrap" style="position: relative;">
+<section id="globo" data-screen-label="Globo" style="position: sticky; top: 0; z-index: 1; background: #000000; min-height: var(--zv-app-vh, 100vh); overflow: hidden;">
+ <div id="zv-globe-stage" style="position: relative; width: 100%; height: var(--zv-app-vh, 100vh); overflow: hidden;">
+  <div id="zv-globe-stars" aria-hidden="true" style="position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;"></div>
+  <canvas id="zv-globe-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block;"></canvas>
+  <div id="zv-globe-stripe" aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); height: 260px; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0) 100%);"></div>
+  <div id="zv-globe-blur-center" aria-hidden="true" style="position: absolute; z-index: 1; opacity: 0; pointer-events: none;"></div>
+  <div id="zv-globe-blur-center-sub" aria-hidden="true" style="position: absolute; z-index: 1; opacity: 0; pointer-events: none;"></div>
+  <div id="zv-globe-blur-left" aria-hidden="true" style="position: absolute; z-index: 1; opacity: 0; pointer-events: none;"></div>
+  <div id="zv-globe-blur-right" aria-hidden="true" style="position: absolute; z-index: 1; opacity: 0; pointer-events: none;"></div>
+  <div id="zv-globe-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; text-align: center; padding: 0 24px; max-width: 900px; transition: opacity 0.6s var(--ease-standard);">
+    <h2 id="zv-globe-h" style="margin: 0; font-family: var(--font-display); font-size: var(--display-lg-size); line-height: var(--display-lg-line); font-weight: 800; color: #ffffff; text-wrap: pretty;">Crescimento que rompe barreiras</h2>
+    <p id="zv-globe-sub" style="margin: 16px 0 0; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 700; color: #FF4A17; text-wrap: pretty;">Maiores alcances até para as maiores distâncias</p>
+  </div>
+  <div id="zv-globe-side-left" style="position: absolute; z-index: 2; left: clamp(24px, 7vw, 110px); top: 50%; transform: translate(-40px, -50%); max-width: min(42%, 460px); opacity: 0; pointer-events: none; transition: opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard);">
+    <h3 id="zv-globe-left-title" style="margin: 0; font-family: var(--font-display); font-size: var(--display-md-size); line-height: var(--display-md-line); font-weight: 800; color: var(--purple-600); text-wrap: pretty;">Fundada em Santa Maria</h3>
+    <p id="zv-globe-left-sub" style="margin: 14px 0 0; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 500; color: #ffffff; text-wrap: pretty;">Nossa história começou no Rio Grande do Sul, apoiávamos apenas negócios locais</p>
+  </div>
+  <div id="zv-globe-side-right" style="position: absolute; z-index: 2; top: 583px; transform: translate(40px, -50%); max-width: 2000px; text-align: right; opacity: 0; pointer-events: none; transition: opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard); width: 281px; left: 288px; height: 602px">
+    
+    <h3 id="zv-globe-right-title" style="margin: 0; font-family: var(--font-display); font-size: var(--display-md-size); line-height: 1.15; font-weight: 800; color: var(--purple-600); text-wrap: pretty; width: 304px; height: 252px">Hoje entregamos ao redor do mundo inteiro</h3><p id="zv-globe-right-sub" style="margin: 14px 0 0; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 500; color: #ffffff; text-wrap: pretty; width: 300px">Alcance e desenvolvimento que destrói barreiras e fronteiras. De onde você estiver, a Zanvie está com você</p>
+  </div>
+ </div>
+</section>
+</div>
+
+<!-- ============ SEÇÕES 2+ (sobrepõem a Hero fixa em parallax) ============ -->
+<div id="zv-secoes-wrap" style="position: relative; z-index: 2;">
+
+  <!-- SEÇÃO 2 — Pare de postar sem estratégia -->
+  
+
+  <!-- Wrapper do efeito de empilhamento 2→3 (altura definida via JS) -->
+  <div id="zv-stack-wrap" style="position: relative; z-index: 1;">
+<section id="estrategia" data-screen-label="Pare de postar sem estratégia" style="padding: 140px 32px 160px; border-radius: 40px 40px 0 0; overflow: hidden; position: relative; min-height: var(--zv-app-vh, 100vh); box-sizing: border-box; border-top: 1px solid rgba(255,255,255,0.06); background: #000000">
+  <div style="max-width: var(--container-max); margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: clamp(48px, 6vh, 80px); position: relative; width: 100%;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; max-width: 760px;">
+        <span id="zv-tl-eyebrow" style="font-family: var(--font-label); font-size: 13px; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: var(--orange-500);">COMO FAZEMOS ACONTECER</span>
+        <h2 id="zv-tl-head" style="margin: 0; font-family: onest; font-style: italic; font-size: var(--display-lg-size); line-height: var(--display-lg-line); font-weight: 600; color: #ffffff; text-wrap: pretty"><span style="font-style: normal;">Da estratégia à conversão real.</span></h2>
+        <p id="zv-tl-sub" style="margin: 0; font-family: var(--font-body); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 400; color: rgba(255,255,255,0.72); text-wrap: pretty;">Cada campanha passa por um processo claro, do conteúdo ao resultado — sem achismo em nenhuma etapa.</p>
+      </div>
+      <div id="zv-timeline" style="position: relative; width: 100%; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;">
+        <div id="zv-timeline-line" aria-hidden="true" style="position: absolute; top: 38px; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.16); z-index: 0;"></div>
+        <div class="zv-tl-item" style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; position: relative; z-index: 1;">
+          <div style="position: relative;">
+            <div class="zv-tl-circle" style="width: 76px; height: 76px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: #7B6FE0">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+            </div>
+            <span class="zv-tl-badge" style="position: absolute; top: -6px; right: -6px; width: 26px; height: 26px; border-radius: 999px; background: #ffffff; color: #2a1f66; font-family: var(--font-label); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #000000;">1</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 220px;">
+            <h3 id="zv-tl-1-title" style="margin: 0; font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.3; font-weight: 700; color: #ffffff;">Criativos para Instagram</h3>
+            <p id="zv-tl-1-desc" style="margin: 0; font-family: var(--font-body); font-size: 0.9375rem; line-height: 1.5; font-weight: 400; color: rgba(255,255,255,0.6); text-wrap: pretty;">Pacotes de posts e artes pensados para o feed do seu perfil, com identidade visual própria.</p>
+          </div>
+        </div>
+        <div class="zv-tl-item" style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; position: relative; z-index: 1;">
+          <div style="position: relative;">
+            <div class="zv-tl-circle" style="width: 76px; height: 76px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: #7B6FE0">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+            </div>
+            <span class="zv-tl-badge" style="position: absolute; top: -6px; right: -6px; width: 26px; height: 26px; border-radius: 999px; background: #ffffff; color: #2a1f66; font-family: var(--font-label); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #000000;">2</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 220px;">
+            <h3 id="zv-tl-2-title" style="margin: 0; font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.3; font-weight: 700; color: #ffffff;">Stories</h3>
+            <p id="zv-tl-2-desc" style="margin: 0; font-family: var(--font-body); font-size: 0.9375rem; line-height: 1.5; font-weight: 400; color: rgba(255,255,255,0.6); text-wrap: pretty;">Conteúdo dinâmico para manter presença diária e proximidade com o seu público.</p>
+          </div>
+        </div>
+        <div class="zv-tl-item" style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; position: relative; z-index: 1;">
+          <div style="position: relative;">
+            <div class="zv-tl-circle" style="width: 76px; height: 76px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: #7B6FE0">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+            </div>
+            <span class="zv-tl-badge" style="position: absolute; top: -6px; right: -6px; width: 26px; height: 26px; border-radius: 999px; background: #ffffff; color: #2a1f66; font-family: var(--font-label); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #000000;">3</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 220px;">
+            <h3 id="zv-tl-3-title" style="margin: 0; font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.3; font-weight: 700; color: #ffffff;">Seguidores e engajamento</h3>
+            <p id="zv-tl-3-desc" style="margin: 0; font-family: var(--font-body); font-size: 0.9375rem; line-height: 1.5; font-weight: 400; color: rgba(255,255,255,0.6); text-wrap: pretty;">Estratégias para crescer sua audiência com pessoas reais, interessadas no seu negócio.</p>
+          </div>
+        </div>
+        <div class="zv-tl-item" style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; position: relative; z-index: 1;">
+          <div style="position: relative;">
+            <div class="zv-tl-circle" style="width: 76px; height: 76px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: #7B6FE0">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg>
+            </div>
+            <span class="zv-tl-badge" style="position: absolute; top: -6px; right: -6px; width: 26px; height: 26px; border-radius: 999px; background: #ffffff; color: #2a1f66; font-family: var(--font-label); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #000000;">4</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 220px;">
+            <h3 id="zv-tl-4-title" style="margin: 0; font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.3; font-weight: 700; color: #ffffff;">Landing pages</h3>
+            <p id="zv-tl-4-desc" style="margin: 0; font-family: var(--font-body); font-size: 0.9375rem; line-height: 1.5; font-weight: 400; color: rgba(255,255,255,0.6); text-wrap: pretty;">Páginas construídas para converter visitante em cliente, alinhadas a cada campanha.</p>
+          </div>
+        </div>
+        <div class="zv-tl-item" style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; position: relative; z-index: 1;">
+          <div style="position: relative;">
+            <div class="zv-tl-circle" style="width: 76px; height: 76px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: #7B6FE0">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+            </div>
+            <span class="zv-tl-badge" style="position: absolute; top: -6px; right: -6px; width: 26px; height: 26px; border-radius: 999px; background: #ffffff; color: #2a1f66; font-family: var(--font-label); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #000000;">5</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 220px;">
+            <h3 id="zv-tl-5-title" style="margin: 0; font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.3; font-weight: 700; color: #ffffff;">Tráfego pago</h3>
+            <p id="zv-tl-5-desc" style="margin: 0; font-family: var(--font-body); font-size: 0.9375rem; line-height: 1.5; font-weight: 400; color: rgba(255,255,255,0.6); text-wrap: pretty;">Campanhas em Meta Ads e Google Ads levando as pessoas certas até você.</p>
+          </div>
+        </div>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- SEÇÃO 3 — O que fazemos (desliza por cima da Seção 2 via sticky stack; margin-top via JS) -->
+  <section id="servicos" data-screen-label="O que fazemos" style="position: relative; z-index: 2; background: #f4f4f6; border-top: 1px solid rgba(255,255,255,0.6); padding: 120px 32px 140px; border-radius: 40px 40px 0 0; box-shadow: 0 -24px 60px rgba(10,10,11,0.35), inset 0 1px 0 rgba(255,255,255,0.7); overflow: hidden;">
+    <div style="position: relative; z-index: 1; max-width: var(--container-max); margin: 0 auto; display: flex; flex-direction: column; gap: 64px;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center;">
+        <h2 id="zv-serv-title" style="margin: 0; font-family: var(--font-display); font-size: var(--display-lg-size); line-height: var(--display-lg-line); font-weight: 800; color: var(--black-900)">O que fazemos</h2>
+        <p id="zv-serv-sub" style="margin: 0; max-width: 640px; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 500; color: var(--black-900); text-wrap: pretty">Serviços 100% personalizados para o porte, o nicho e a identidade do seu negócio.</p>
+      </div>
+      <div style="position: relative; width: 100%; max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 30px;">
+        <div style="position: relative; width: 100%;">
+          <button id="zv-carousel-prev" onClick="{{ servPrev }}" type="button" aria-label="Serviço anterior" style="position: absolute; left: clamp(6px, 2vw, 14px); top: 50%; transform: translateY(-50%); z-index: 3; display: inline-flex; align-items: center; justify-content: center; width: clamp(42px, 9vw, 52px); height: clamp(42px, 9vw, 52px); border-radius: 999px; border: 1px solid rgba(10,10,11,0.1); background: rgba(255,255,255,0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #0a0a0b; cursor: pointer; box-shadow: 0 8px 22px -6px rgba(10,10,11,0.22); transition: opacity .2s ease, background .2s ease, transform .08s ease; opacity: 0.3; pointer-events: none;" style-hover="background: rgba(255,255,255,0.97);" style-active="transform: translateY(-50%) scale(0.93);">
+            <svg id="zv-arrow-prev" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+          </button>
+          <button id="zv-carousel-next" onClick="{{ servNext }}" type="button" aria-label="Próximo serviço" style="position: absolute; right: clamp(6px, 2vw, 14px); top: 50%; transform: translateY(-50%); z-index: 3; display: inline-flex; align-items: center; justify-content: center; width: clamp(42px, 9vw, 52px); height: clamp(42px, 9vw, 52px); border-radius: 999px; border: 1px solid rgba(10,10,11,0.1); background: rgba(255,255,255,0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #0a0a0b; cursor: pointer; box-shadow: 0 8px 22px -6px rgba(10,10,11,0.22); transition: opacity .2s ease, background .2s ease, transform .08s ease;" style-hover="background: rgba(255,255,255,0.97);" style-active="transform: translateY(-50%) scale(0.93);">
+            <svg id="zv-arrow-next" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
+          <div id="zv-carousel-track" style="position: relative; width: 100%; height: 360px; overflow: hidden; border-radius: 28px; background: rgba(236,236,241,0.55); backdrop-filter: blur(16px) saturate(1.35); -webkit-backdrop-filter: blur(16px) saturate(1.35); border: 1px solid rgba(255,255,255,0.75); box-shadow: 0 28px 60px -16px rgba(10,10,11,0.25), 0 8px 20px rgba(10,10,11,0.08), inset 0 1px 0 rgba(255,255,255,0.8);">
+            <div id="zv-slide-0" role="group" aria-roledescription="slide" aria-label="1 de 3" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 18px; padding: 40px clamp(64px, 9vw, 100px); transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease; will-change: transform, opacity; transform: translateX(0); opacity: 1; background-color: #FFFFFF">
+              <h3 id="zv-c3-title" style="margin: 0; font-family: var(--font-display); font-size: var(--display-md-size); line-height: var(--display-md-line); font-weight: 700; color: var(--purple-600);">Criativos com Estratégia</h3>
+              <p id="zv-c3-desc" style="margin: 0; max-width: 660px; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 500; color: #0a0a0b; text-wrap: pretty;">Posts, reels e stories criados a partir de análise de nicho e comportamento de mercado — cada peça pensada para o seu público, não para preencher calendário.</p>
+              <p id="zv-c3-hl" style="margin: 0; max-width: 620px; font-family: var(--font-display); font-size: var(--body-md-size); line-height: var(--body-md-line); font-weight: 700; color: var(--orange-500); text-wrap: pretty;">Estratégia antes de estética</p>
+            </div>
+            <div id="zv-slide-1" role="group" aria-roledescription="slide" aria-label="2 de 3" aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 18px; padding: 40px clamp(64px, 9vw, 100px); transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease; will-change: transform, opacity; transform: translateX(64px); opacity: 0; pointer-events: none; background-color: var(--white-000)">
+              <h3 id="zv-c1-title" style="margin: 0; font-family: var(--font-display); font-size: var(--display-md-size); line-height: var(--display-md-line); font-weight: 700; color: var(--purple-600);">Tráfego Pago</h3>
+              <p id="zv-c1-desc" style="margin: 0; max-width: 660px; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 500; color: #0a0a0b; text-wrap: pretty;">Campanhas em Meta Ads e Google Ads, construídas com base em análise de nicho, mercado e o que está em alta demanda.</p>
+              <p id="zv-c1-hl" style="margin: 0; max-width: 620px; font-family: var(--font-display); font-size: var(--body-md-size); line-height: var(--body-md-line); font-weight: 700; color: var(--orange-500); text-wrap: pretty;">Foco total em conversão de "visualizadores" para reais clientes</p>
+            </div>
+            <div id="zv-slide-2" role="group" aria-roledescription="slide" aria-label="3 de 3" aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 18px; padding: 40px clamp(64px, 9vw, 100px); transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease; will-change: transform, opacity; transform: translateX(64px); opacity: 0; pointer-events: none; background-color: var(--white-000)">
+              <h3 id="zv-c2-title" style="margin: 0; font-family: var(--font-display); font-size: var(--display-md-size); line-height: var(--display-md-line); font-weight: 700; color: var(--purple-600);">Sites e Landing Pages</h3>
+              <p id="zv-c2-desc" style="margin: 0; max-width: 660px; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 500; color: #0a0a0b; text-wrap: pretty;">Páginas pensadas para o objetivo da campanha, com identidade visual personalizada para seu negócio.</p>
+              <p id="zv-c2-hl" style="margin: 0; max-width: 620px; font-family: var(--font-display); font-size: var(--body-md-size); line-height: var(--body-md-line); font-weight: 700; color: var(--orange-500); text-wrap: pretty;">Cada detalhe feito sob medida</p>
+            </div>
+          </div>
+        </div>
+        <div role="tablist" aria-label="Selecionar serviço" style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+          <button id="zv-dot-0" onClick="{{ servGo0 }}" type="button" role="tab" aria-label="Ver serviço 1" aria-current="true" style="width: 10px; height: 10px; background: #7B6FE0; transform: scale(1.15); padding: 0; border: none; border-radius: 999px; cursor: pointer; transition: background .3s ease, transform .3s ease;"></button>
+          <button id="zv-dot-1" onClick="{{ servGo1 }}" type="button" role="tab" aria-label="Ver serviço 2" aria-current="false" style="width: 10px; height: 10px; background: rgba(10,10,11,0.2); padding: 0; border: none; border-radius: 999px; cursor: pointer; transition: background .3s ease, transform .3s ease;"></button>
+          <button id="zv-dot-2" onClick="{{ servGo2 }}" type="button" role="tab" aria-label="Ver serviço 3" aria-current="false" style="width: 10px; height: 10px; background: rgba(10,10,11,0.2); padding: 0; border: none; border-radius: 999px; cursor: pointer; transition: background .3s ease, transform .3s ease;"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ SEÇÃO 5 — FAQ (fundo branco full-bleed; OptionWheel à esquerda, resposta à direita) ============ -->
+<section id="faq" data-screen-label="FAQ" style="position: relative; z-index: 3; background: #ffffff; padding: 110px clamp(24px, 5vw, 72px) 130px;">
+  
+  <div style="max-width: var(--container-max); margin: 0 auto; display: flex; flex-direction: column; gap: clamp(48px, 7vw, 88px);">
+    <div id="zv-faq-head" style="display: flex; flex-direction: column; gap: 14px; max-width: 640px; align-items: center; text-align: center; margin: 0 auto;">
+      <h2 id="zv-faq-title" style="margin: 0; font-family: var(--font-display); font-size: var(--display-lg-size); line-height: var(--display-lg-line); font-weight: 800; color: #0a0a0b;">Perguntas frequentes</h2>
+      <p id="zv-faq-sub" style="margin: 0; font-family: var(--font-display); font-size: var(--body-lg-size); line-height: var(--body-lg-line); font-weight: 500; color: #52525b; text-wrap: pretty;">Tudo que você precisa saber antes de começar.</p>
+    </div>
+    <div id="zv-faq-cards" style="width: 100%; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px;">
+      <sc-for list="{{ faqCards }}" as="fq" hint-placeholder-count="5">
+        <div class="zv-faq-card-item" style="border-bottom: 1px solid #e4e4e7;">
+          <button type="button" class="zv-faq-card-btn" onClick="{{ fq.toggle }}" aria-expanded="{{ fq.ariaExpanded }}" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 18px; background: transparent; border: none; cursor: pointer; padding: 22px 8px; text-align: left; border-radius: 10px; transition: background 180ms ease;" style-hover="background: rgba(10,10,11,0.035);">
+            <span class="zv-faq-card-q" style="font-family: var(--font-display); font-size: 1.125rem; line-height: 1.35; font-weight: 700; color: #0a0a0b; text-wrap: pretty;">{{ fq.q }}</span>
+            <svg class="zv-faq-card-chev" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; color: #0a0a0b; transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1); transform: {{ fq.chevTransform }};"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          <div class="zv-faq-card-panel" style="display: grid; grid-template-rows: {{ fq.rows }}; transition: grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1);">
+            <div style="min-height: 0; overflow: hidden;">
+              <p class="zv-faq-card-a" style="margin: 0; padding: 0 8px 22px; font-family: var(--font-display); font-size: 1rem; line-height: 1.6; font-weight: 400; color: #52525b; text-wrap: pretty;">{{ fq.a }}</p>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SEÇÃO 6 — CTA + FOOTER (última seção; scroll livre) ============ -->
+<section id="zv-cta" data-screen-label="CTA Contato" style="position: relative; z-index: 3; background: #ffffff; padding: 120px clamp(24px, 5vw, 72px);">
+  <div style="max-width: var(--container-max); margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
+    <span id="zv-cta-micro" style="align-self: center; margin: 0 0 24px; text-align: center; font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--black-900)">PRONTO PRA COMEÇAR? →</span>
+    <div id="zv-cta-glass-wrap" style="position: relative; width: 100%; display: flex; justify-content: center;">
+      <div id="zv-cta-glass" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 999px; background: rgba(0,0,0,0.08); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 12px 40px rgba(0,0,0,0.06); padding: 28px clamp(28px, 4vw, 56px);">
+        <h2 id="zv-cta-headline" style="margin: 0; font-family: var(--font-display); font-size: clamp(2.25rem, 4.5vw, 4.5rem); font-weight: 800; line-height: 1; letter-spacing: -0.02em; color: var(--purple-600); text-wrap: balance; text-align: center">Fale com a gente</h2>
+      </div>
+      <a id="zv-cta-button" href="{{ waHref }}" target="_blank" rel="noopener" aria-label="Falar no WhatsApp" style="position: absolute; left: 50%; bottom: 0; z-index: 5; display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 999px; background: #FF5A2E; text-decoration: none; transform: translate(-50%, 80%); transition: background 220ms ease;" style-hover="background: #ff6f47;">
+        <svg id="zv-cta-icon" viewBox="0 0 24 24" width="32" height="32" fill="#ffffff" aria-hidden="true"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"></path></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer id="zv-footer" style="position: relative; z-index: 3; background: #000000; padding: 120px clamp(24px, 5vw, 72px) 48px;">
+  <div style="max-width: var(--container-max); margin: 0 auto;">
+    <div id="zv-footer-cols" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); column-gap: 48px; row-gap: 48px; align-items: start;">
+      <div id="zv-footer-col-1">
+        <p id="zv-footer-brand" style="margin: 0; max-width: 15ch; font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; line-height: 1.2; color: #ffffff; text-wrap: pretty;">A agência que constrói seu caminho até o cliente®</p>
+      </div>
+      <div id="zv-footer-col-2" style="display: flex; flex-direction: column; gap: 16px;">
+        <span id="zv-footer-label-1" style="font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #8a8a8a;">Contato</span>
+        <a id="zv-footer-email" href="mailto:zanviegroup@gmail.com" style="font-family: var(--font-display); font-size: 1rem; color: #ffffff; text-decoration: none; width: fit-content; transition: color 180ms ease;">zanviegroup@gmail.com</a>
+        <a id="zv-footer-phone" href="{{ waHref }}" target="_blank" rel="noopener" style="font-family: var(--font-display); font-size: 1rem; color: #ffffff; text-decoration: none; width: fit-content; transition: color 180ms ease;">(55) 00000-0000</a>
+      </div>
+      <div id="zv-footer-col-3" style="display: flex; flex-direction: column; gap: 16px;">
+        <span id="zv-footer-label-2" style="font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #8a8a8a;">Redes sociais</span>
+        <a id="zv-footer-insta-handle" href="https://instagram.com/zanvie.group" target="_blank" rel="noopener" style="font-family: var(--font-display); font-size: 1rem; color: #ffffff; text-decoration: none; width: fit-content; transition: color 180ms ease;">@zanvie.group</a>
+        <div id="zv-footer-social" style="display: flex; gap: 16px; margin-top: 4px;">
+          <a id="zv-footer-insta-link" href="https://instagram.com/zanvie.group" target="_blank" rel="noopener" aria-label="Instagram" style="display: inline-flex; color: #ffffff; transition: color 180ms ease;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"></line></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div id="zv-footer-divider" style="height: 1px; background: #2a2a2a; margin: 56px 0 24px;"></div>
+    <div id="zv-footer-bottom-row" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+      <span id="zv-footer-copyright" style="font-family: var(--font-display); font-size: 0.8125rem; color: #6a6a6a;">© 2026 Zanvie — Publicidade e Tráfego Pago. Todos os direitos reservados.</span>
+      <img id="zv-footer-logo" src="logo-zanvie-semfundo-mrslsn20-obte.png" alt="Zanvie" style="height: 40px; width: auto; opacity: 0.85;">
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;navPillGlassOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.5,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navPillGlassBlur&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:7,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navPillGlassBorderOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.15,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navPillActiveColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7B6FE0&quot;,&quot;options&quot;:[&quot;#7B6FE0&quot;,&quot;#0a0a0b&quot;,&quot;#FF5A2E&quot;,&quot;#ffffff&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navPillInactiveTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#f5f5f5&quot;,&quot;options&quot;:[&quot;#f5f5f5&quot;,&quot;#ffffff&quot;,&quot;#c7c7cc&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navGlassOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navGlassBlur&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navGlassSaturate&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:110,&quot;min&quot;:100,&quot;max&quot;:200,&quot;step&quot;:5,&quot;unit&quot;:&quot;%&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navGlassBorderOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.24,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;mobileBreakpoint&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:768,&quot;min&quot;:360,&quot;max&quot;:1024,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;mobileLogoScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.25,&quot;min&quot;:0.5,&quot;max&quot;:1.6,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;mobileShowTagline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;whatsappButtonCircular&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;whatsappCircleSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:46,&quot;min&quot;:36,&quot;max&quot;:64,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerBackgroundColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0a0a0b&quot;,&quot;options&quot;:[&quot;#000000&quot;,&quot;#0a0a0b&quot;,&quot;#ffffff&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;logoTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerItem1Text&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Início&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerItem2Text&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Serviços&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerItem3Text&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Contato&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerPillBg&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#f6f4f1&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#0a0a0b&quot;,&quot;#f6f4f1&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0a0a0b&quot;,&quot;options&quot;:[&quot;#0a0a0b&quot;,&quot;#ffffff&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerActiveBg&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0a0a0b&quot;,&quot;options&quot;:[&quot;#0a0a0b&quot;,&quot;#7B6FE0&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerActiveTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerCtaText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Falar no WhatsApp&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerCtaBg&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ff5a2e&quot;,&quot;options&quot;:[&quot;#ff5a2e&quot;,&quot;#7B6FE0&quot;,&quot;#25d366&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;headerCtaTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navPillPaddingX&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:19,&quot;min&quot;:8,&quot;max&quot;:32,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navPillPaddingY&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:9,&quot;min&quot;:3,&quot;max&quot;:16,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navItemFontSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:14.6,&quot;min&quot;:11,&quot;max&quot;:18,&quot;step&quot;:0.2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;heroEyebrowText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Publicidade e Tráfego Pago&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;heroHl1Color&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF4A17&quot;,&quot;options&quot;:[&quot;#FF4A17&quot;,&quot;#7268A4&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Hero&quot;},&quot;heroHl2Color&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7268A4&quot;,&quot;options&quot;:[&quot;#7268A4&quot;,&quot;#FF4A17&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Hero&quot;},&quot;heroSubtitleText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Tráfego pago, sites e conteúdos trabalhando juntos pelo seu resultado.&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;heroCtaText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Quero uma proposta&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;heroBlur&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2,&quot;min&quot;:0,&quot;max&quot;:12,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;overlayDarkness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.2,&quot;min&quot;:0.2,&quot;max&quot;:0.85,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Hero&quot;},&quot;heroBgImage&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;assets/hero-bg-escritorio.png&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;servTitleText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;O que fazemos&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servSubtitleText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Serviços 100% personalizados para o porte, o nicho e a identidade do seu negócio.&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard1Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Tráfego Pago&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard1Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Campanhas em Meta Ads e Google Ads, construídas com base em análise de nicho, mercado e o que está em alta demanda.&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard1Highlight&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Foco total em conversão de \&quot;visualizadores\&quot; para reais clientes&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard2Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Sites e Landing Pages&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard2Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Páginas pensadas para o objetivo da campanha, com identidade visual personalizada para seu negócio.&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard2Highlight&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Cada detalhe feito sob medida&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard3Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Criativos com Estratégia&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard3Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Posts, reels e stories criados a partir de análise de nicho e comportamento de mercado — cada peça pensada para o seu público, não para preencher calendário.&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCard3Highlight&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Estratégia antes de estética&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCardOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.54,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.02,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCardBlur&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:16,&quot;min&quot;:0,&quot;max&quot;:48,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;servCardBorderOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.75,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselArrowColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0a0a0b&quot;,&quot;options&quot;:[&quot;#0a0a0b&quot;,&quot;#7B6FE0&quot;,&quot;#FF5A2E&quot;,&quot;#ffffff&quot;],&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselArrowSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:29,&quot;min&quot;:16,&quot;max&quot;:40,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselDotActiveColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF5A2E&quot;,&quot;options&quot;:[&quot;#7B6FE0&quot;,&quot;#FF5A2E&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselDotInactiveColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;rgba(10,10,11,0.35)&quot;,&quot;options&quot;:[&quot;rgba(10,10,11,0.2)&quot;,&quot;rgba(10,10,11,0.35)&quot;,&quot;rgba(255,255,255,0.4)&quot;],&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselDotSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:12,&quot;min&quot;:6,&quot;max&quot;:20,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselTransitionDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.65,&quot;min&quot;:0.15,&quot;max&quot;:1.2,&quot;step&quot;:0.05,&quot;unit&quot;:&quot;s&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselBlockHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:370,&quot;min&quot;:240,&quot;max&quot;:560,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;carouselLoop&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;whatsappNumber&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;5500000000000&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Global&quot;},&quot;brandPurple&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#6a45f0&quot;,&quot;options&quot;:[&quot;#7c5cfc&quot;,&quot;#7B6FE0&quot;,&quot;#6a45f0&quot;],&quot;section&quot;:&quot;Global&quot;},&quot;brandOrange&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF4A17&quot;,&quot;options&quot;:[&quot;#FF4A17&quot;,&quot;#ff5a2e&quot;,&quot;#E63A0B&quot;],&quot;section&quot;:&quot;Global&quot;},&quot;faqTitleText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Perguntas frequentes&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqSubtitleText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Tudo que você precisa saber antes de começar.&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTitleColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0a0a0b&quot;,&quot;options&quot;:[&quot;#0a0a0b&quot;,&quot;#7B6FE0&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTitleStripeEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTitleStripeHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:40,&quot;min&quot;:16,&quot;max&quot;:140,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTitleStripeColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0a0a0b&quot;,&quot;options&quot;:[&quot;#000000&quot;,&quot;#0a0a0b&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTitleStripeFullWidth&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTitleTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF5A2E&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#f5f5f5&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqSubtitleTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#d4d4d8&quot;,&quot;options&quot;:[&quot;#d4d4d8&quot;,&quot;#a1a1aa&quot;,&quot;#ffffff&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqSubtitleColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#52525b&quot;,&quot;options&quot;:[&quot;#52525b&quot;,&quot;#6b7280&quot;,&quot;#9ca3af&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqQ1&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Quanto tempo leva para ver resultado?&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqA1&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Os primeiros sinais de performance aparecem já nas primeiras semanas de campanha, mas resultados consistentes costumam vir a partir do primeiro mês de ajustes e otimização.&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqQ2&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Funciona para o meu tipo de negócio?&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqA2&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Trabalhamos com negócios locais de diversos segmentos. Cada estratégia é construída com base no seu nicho, público e objetivo.&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqQ3&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Preciso ter um site pronto?&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqA3&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Não. Também criamos sites e landing pages pensados especificamente para converter em campanhas pagas.&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqQ4&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Como funciona o contrato?&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqA4&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Sem burocracia excessiva. Definimos escopo, prazo e investimento antes de começar, com total transparência.&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqQ5&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Vocês cuidam de tudo ou preciso participar?&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqA5&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Cuidamos da execução técnica e estratégica, mas o alinhamento constante com você garante que a campanha reflita a identidade do seu negócio.&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#9ca3af&quot;,&quot;options&quot;:[&quot;#9ca3af&quot;,&quot;#c7c7cc&quot;,&quot;#71717a&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqTitleAlignment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;center&quot;,&quot;options&quot;:[&quot;left&quot;,&quot;center&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqSectionFullBleed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;FAQ&quot;},&quot;transitionGradientHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:400,&quot;min&quot;:40,&quot;max&quot;:400,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;scrollSnapEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Navegação/Scroll&quot;},&quot;scrollSnapThreshold&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:40,&quot;min&quot;:2,&quot;max&quot;:60,&quot;step&quot;:1,&quot;section&quot;:&quot;Navegação/Scroll&quot;},&quot;scrollSnapTransitionDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:800,&quot;min&quot;:200,&quot;max&quot;:1600,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;section&quot;:&quot;Navegação/Scroll&quot;},&quot;scrollSnapTouchThreshold&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:50,&quot;min&quot;:20,&quot;max&quot;:160,&quot;step&quot;:5,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navegação/Scroll&quot;},&quot;globeHeadlineText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Crescimento que rompe barreiras&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeSubtitleText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Maiores alcances até para as maiores distâncias&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeHeadlineColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7268A4&quot;,&quot;options&quot;:[&quot;#7268A4&quot;,&quot;#ffffff&quot;,&quot;#FF4A17&quot;],&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeSubtitleColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF4A17&quot;,&quot;options&quot;:[&quot;#FF4A17&quot;,&quot;#ffffff&quot;,&quot;#7268A4&quot;],&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeRotationSpeed&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.4,&quot;min&quot;:0,&quot;max&quot;:0.6,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globePinColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#e02424&quot;,&quot;options&quot;:[&quot;#e02424&quot;,&quot;#FF5A2E&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globePinSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.04,&quot;min&quot;:0.02,&quot;max&quot;:0.15,&quot;step&quot;:0.005,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globePinLatitude&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:-29.68,&quot;min&quot;:-90,&quot;max&quot;:90,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globePinLongitude&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:-53.81,&quot;min&quot;:-180,&quot;max&quot;:180,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeState1RotationLocked&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globePinVisibleOnState3&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.56,&quot;min&quot;:0.2,&quot;max&quot;:1,&quot;step&quot;:0.02,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeMobileScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0.3,&quot;max&quot;:1,&quot;step&quot;:0.02,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeStripeOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeStripeHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:80,&quot;min&quot;:80,&quot;max&quot;:600,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeStripeFeather&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.55,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeContinentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#4a4a4a&quot;,&quot;options&quot;:[&quot;#4a4a4a&quot;,&quot;#3a3a3a&quot;,&quot;#7B6FE0&quot;,&quot;#2a2a2e&quot;],&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeGridLineColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#c9c9d4&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#c9c9d4&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeGridLineOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.1,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;sectionHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:130,&quot;min&quot;:60,&quot;max&quot;:140,&quot;step&quot;:5,&quot;unit&quot;:&quot;vh&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;sectionBackgroundColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0a0a0b&quot;,&quot;options&quot;:[&quot;#000000&quot;,&quot;#0a0a0b&quot;,&quot;#0A1128&quot;],&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;globeState1Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Fundada em Santa Maria&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeState1Subtitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Nossa história começou no Rio Grande do Sul, apoiávamos apenas negócios locais&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeState1Highlight&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Rio Grande do Sul&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeState2Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Hoje entregamos ao redor do mundo inteiro&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeState2Subtitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Alcance e desenvolvimento que destrói barreiras e fronteiras. De onde você estiver, a Zanvie está com você&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeState2Highlight&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;barreiras e fronteiras&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeSideOffset&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:37,&quot;min&quot;:0,&quot;max&quot;:45,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeZoomAmount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.35,&quot;min&quot;:0,&quot;max&quot;:0.6,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeFastRotationSpeed&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.35,&quot;min&quot;:0.1,&quot;max&quot;:2,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeStateTransitionDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:850,&quot;min&quot;:200,&quot;max&quot;:1600,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeTextFontSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:56,&quot;min&quot;:20,&quot;max&quot;:64,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeRightStateScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.2,&quot;min&quot;:1,&quot;max&quot;:1.6,&quot;step&quot;:0.02,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeRightStateOffsetY&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:15,&quot;min&quot;:0,&quot;max&quot;:25,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeLeftStateOffsetY&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:25,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;timelineEyebrow&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;COMO FAZEMOS ACONTECER&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineHeadline&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Da estratégia à conversão real.&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineSubtitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Cada campanha passa por um processo claro, do conteúdo ao resultado — sem achismo em nenhuma etapa.&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep1Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Criativos para Instagram&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep1Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Pacotes de posts e artes pensados para o feed do seu perfil, com identidade visual própria.&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep2Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Stories&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep2Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Conteúdo dinâmico para manter presença diária e proximidade com o seu público.&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep3Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Seguidores e engajamento&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep3Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Estratégias para crescer sua audiência com pessoas reais, interessadas no seu negócio.&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep4Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Landing pages&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep4Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Páginas construídas para converter visitante em cliente, alinhadas a cada campanha.&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep5Title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Tráfego pago&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineStep5Desc&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Campanhas em Meta Ads e Google Ads levando as pessoas certas até você.&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineIconColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7B6FE0&quot;,&quot;options&quot;:[&quot;#7B6FE0&quot;,&quot;&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineIconGradientStart&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7B6FE0&quot;,&quot;options&quot;:[&quot;#7B6FE0&quot;,&quot;#FF5A2E&quot;,&quot;#6a45f0&quot;],&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineIconGradientEnd&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF5A2E&quot;,&quot;options&quot;:[&quot;#FF5A2E&quot;,&quot;#7B6FE0&quot;,&quot;#e6431a&quot;],&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineLineColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;rgba(255,255,255,0.16)&quot;,&quot;options&quot;:[&quot;rgba(255,255,255,0.16)&quot;,&quot;rgba(123,111,224,0.3)&quot;,&quot;rgba(255,255,255,0.08)&quot;],&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineNumberBadgeColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#2a1f66&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#2a1f66&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;ctaMicroText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;PRONTO PRA COMEÇAR? →&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaHeadlineText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Fale com a gente&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaHeadlineSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:3.75,&quot;min&quot;:2.5,&quot;max&quot;:9,&quot;step&quot;:0.25,&quot;unit&quot;:&quot;rem&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaBackgroundColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#f5f5f5&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaHeadlineColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#544993&quot;,&quot;options&quot;:[&quot;#544993&quot;,&quot;#000000&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaMicroTextColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#4b4b4b&quot;,&quot;options&quot;:[&quot;#4b4b4b&quot;,&quot;#000000&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaButtonColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF5A2E&quot;,&quot;options&quot;:[&quot;#FF5A2E&quot;,&quot;#7B6FE0&quot;,&quot;#000000&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaButtonSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:120,&quot;min&quot;:48,&quot;max&quot;:120,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaButtonIconColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#000000&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerBackgroundColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#000000&quot;,&quot;options&quot;:[&quot;#000000&quot;,&quot;#0a0a0b&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerBrandStatementText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;A agência que constrói seu caminho até o cliente®&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerBrandStatementSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.75,&quot;min&quot;:1,&quot;max&quot;:3,&quot;step&quot;:0.05,&quot;unit&quot;:&quot;rem&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerColumnLabelColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#8a8a8a&quot;,&quot;options&quot;:[&quot;#8a8a8a&quot;,&quot;#6a6a6a&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerLinkColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#c7c7cc&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerLinkHoverColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF5A2E&quot;,&quot;options&quot;:[&quot;#FF5A2E&quot;,&quot;#7B6FE0&quot;,&quot;#ffffff&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerContactEmail&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;zanviegroup@gmail.com&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerContactPhone&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;(55) 00000-0000&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerInstagramHandle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;@zanvie.group&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerInstagramUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;https://instagram.com/zanvie.group&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerCopyrightText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;© 2026 Zanvie — Publicidade e Tráfego Pago. Todos os direitos reservados.&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerDividerColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#2a2a2a&quot;,&quot;options&quot;:[&quot;#2a2a2a&quot;,&quot;#3a3a3a&quot;,&quot;#7B6FE0&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerColumnGap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:96,&quot;min&quot;:16,&quot;max&quot;:120,&quot;step&quot;:4,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;sectionVerticalPadding&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:80,&quot;min&quot;:40,&quot;max&quot;:220,&quot;step&quot;:4,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerLogoSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:120,&quot;min&quot;:32,&quot;max&quot;:120,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerLogoSizeMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:140,&quot;min&quot;:40,&quot;max&quot;:140,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaGlassOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.11,&quot;min&quot;:0,&quot;max&quot;:0.3,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaGlassBlur&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:32,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaGlassBorderOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.09,&quot;min&quot;:0,&quot;max&quot;:0.4,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaGlassPadding&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:18,&quot;min&quot;:16,&quot;max&quot;:80,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaGlassBorderRadius&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:27,&quot;min&quot;:0,&quot;max&quot;:999,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaMobileVerticalPadding&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:44,&quot;min&quot;:16,&quot;max&quot;:120,&quot;step&quot;:4,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;footerMobileBlockGap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:28,&quot;min&quot;:8,&quot;max&quot;:56,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaGlassHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:120,&quot;min&quot;:80,&quot;max&quot;:220,&quot;step&quot;:4,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaGlassWidth&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1200,&quot;min&quot;:600,&quot;max&quot;:1400,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaMicroTextSpacing&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:16,&quot;min&quot;:8,&quot;max&quot;:64,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;globeEntryScrollGap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:200,&quot;min&quot;:0,&quot;max&quot;:300,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo&quot;},&quot;timelineMobileBottomSpacing&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:600,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineBottomSpacing&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:140,&quot;min&quot;:0,&quot;max&quot;:600,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineFreeScrollGap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:400,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineHoverScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.125,&quot;min&quot;:1,&quot;max&quot;:1.15,&quot;step&quot;:0.005,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;timelineHoverDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:600,&quot;min&quot;:100,&quot;max&quot;:600,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;section&quot;:&quot;Processo/Como Fazemos&quot;},&quot;faqCardQuestionColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7B6FE0&quot;,&quot;options&quot;:[&quot;#544993&quot;,&quot;#0a0a0b&quot;,&quot;#4b4b4b&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardAnswerColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#52525b&quot;,&quot;options&quot;:[&quot;#52525b&quot;,&quot;#3f3f46&quot;,&quot;#71717a&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardQuestionSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.325,&quot;min&quot;:0.9,&quot;max&quot;:1.6,&quot;step&quot;:0.025,&quot;unit&quot;:&quot;rem&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardAnswerSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.05,&quot;min&quot;:0.8,&quot;max&quot;:1.4,&quot;step&quot;:0.025,&quot;unit&quot;:&quot;rem&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardSpacing&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:12,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardPadding&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:22,&quot;min&quot;:10,&quot;max&quot;:48,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardDividerColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#e4e4e7&quot;,&quot;options&quot;:[&quot;#e4e4e7&quot;,&quot;#d4d4d8&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardIconColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7B6FE0&quot;,&quot;options&quot;:[&quot;#0a0a0b&quot;,&quot;#7B6FE0&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardMaxWidth&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:870,&quot;min&quot;:480,&quot;max&quot;:1100,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqCardAnimationDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:360,&quot;min&quot;:100,&quot;max&quot;:800,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;section&quot;:&quot;FAQ&quot;},&quot;faqFirstCardOpenByDefault&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;FAQ&quot;},&quot;navPillHeightMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:42,&quot;min&quot;:32,&quot;max&quot;:60,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navMobileAlignment&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:-12,&quot;max&quot;:12,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navScrollDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:550,&quot;min&quot;:400,&quot;max&quot;:3000,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;servSectionBackground&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ececf1&quot;,&quot;options&quot;:[&quot;#f4f4f6&quot;,&quot;#ffffff&quot;,&quot;#ececf1&quot;],&quot;section&quot;:&quot;O Que Fazemos&quot;},&quot;navActiveIndicatorHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:67,&quot;min&quot;:40,&quot;max&quot;:100,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navActiveIndicatorPaddingX&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:20,&quot;min&quot;:6,&quot;max&quot;:32,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;navActiveIndicatorRadius&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:133,&quot;min&quot;:0,&quot;max&quot;:999,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Cabeçalho&quot;},&quot;ctaButtonOverlapPercent&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:20,&quot;min&quot;:0,&quot;max&quot;:60,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;ctaMicroTextAlignment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;center&quot;,&quot;options&quot;:[&quot;left&quot;,&quot;center&quot;],&quot;section&quot;:&quot;Contato/Footer&quot;},&quot;starsEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;starsCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:60,&quot;min&quot;:0,&quot;max&quot;:200,&quot;step&quot;:5,&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;starsCountMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:28,&quot;min&quot;:0,&quot;max&quot;:120,&quot;step&quot;:2,&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;starsOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.5,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;starsSizeMin&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0.5,&quot;max&quot;:4,&quot;step&quot;:0.5,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;starsSizeMax&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2.5,&quot;min&quot;:1,&quot;max&quot;:6,&quot;step&quot;:0.5,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;starsParallaxIntensity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.5,&quot;min&quot;:0,&quot;max&quot;:2,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;starsColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#cdd6ff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#cdd6ff&quot;,&quot;#b9c2ff&quot;],&quot;section&quot;:&quot;Globo · Estrelas&quot;},&quot;globeFillColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#000000&quot;,&quot;options&quot;:[&quot;#000000&quot;,&quot;#0a0a0b&quot;,&quot;#050510&quot;],&quot;section&quot;:&quot;Globo&quot;},&quot;navPillWidthMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:400,&quot;step&quot;:4,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillPaddingXMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:3,&quot;min&quot;:0,&quot;max&quot;:20,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillPaddingYMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:20,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillBorderRadiusMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:999,&quot;min&quot;:0,&quot;max&quot;:999,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillItemGapMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2,&quot;min&quot;:0,&quot;max&quot;:20,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navItemFontSizeMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:11,&quot;min&quot;:9,&quot;max&quot;:18,&quot;step&quot;:0.5,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navItemFontWeightMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:600,&quot;min&quot;:400,&quot;max&quot;:800,&quot;step&quot;:100,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navItemLetterSpacingMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.04,&quot;min&quot;:-0.02,&quot;max&quot;:0.08,&quot;step&quot;:0.005,&quot;unit&quot;:&quot;em&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navItemTextColorMobile&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#f5f5f5&quot;,&quot;options&quot;:[&quot;#f5f5f5&quot;,&quot;#ffffff&quot;,&quot;#c7c7cc&quot;],&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navActiveItemTextColorMobile&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#0a0a0b&quot;],&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navActiveIndicatorColorMobile&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7B6FE0&quot;,&quot;options&quot;:[&quot;#7B6FE0&quot;,&quot;#0a0a0b&quot;,&quot;#FF5A2E&quot;,&quot;#ffffff&quot;],&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navActiveIndicatorHeightMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:91,&quot;min&quot;:40,&quot;max&quot;:100,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navActiveIndicatorPaddingXMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:5,&quot;min&quot;:4,&quot;max&quot;:32,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navActiveIndicatorRadiusMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:684,&quot;min&quot;:0,&quot;max&quot;:999,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillBackgroundOpacityMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.5,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillBlurMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:6,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillBorderColorMobile&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffffff&quot;,&quot;options&quot;:[&quot;#ffffff&quot;,&quot;#7B6FE0&quot;,&quot;#FF5A2E&quot;],&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillBorderOpacityMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.08,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;navPillHorizontalOffsetMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:-60,&quot;max&quot;:60,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Navbar Pill — Mobile&quot;},&quot;globeTextBlurEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;section&quot;:&quot;Globo/Blur de Texto&quot;},&quot;globeTextBlurIntensity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:5,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Blur de Texto&quot;},&quot;globeTextBlurSpread&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:80,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Blur de Texto&quot;},&quot;globeTextBlurFeather&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo/Blur de Texto&quot;},&quot;globeTextBlurDarkness&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:0.6,&quot;step&quot;:0.02,&quot;section&quot;:&quot;Globo/Blur de Texto&quot;},&quot;brandPurpleTitles&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7268A4&quot;,&quot;options&quot;:[&quot;#7268A4&quot;,&quot;#544993&quot;,&quot;#8B82BE&quot;],&quot;section&quot;:&quot;Global&quot;},&quot;globeBottomSpacing&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:800,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeBottomSpacingMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:800,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeTitleLetterSpacing&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:-0.02,&quot;min&quot;:-0.05,&quot;max&quot;:0.15,&quot;step&quot;:0.005,&quot;unit&quot;:&quot;em&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeTitleLineHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.9,&quot;min&quot;:0.9,&quot;max&quot;:1.6,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeSubtitleLetterSpacing&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:-0.035,&quot;min&quot;:-0.05,&quot;max&quot;:0.15,&quot;step&quot;:0.005,&quot;unit&quot;:&quot;em&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeSubtitleLineHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.02,&quot;min&quot;:1,&quot;max&quot;:2.2,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeTitleSubtitleGap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:40,&quot;min&quot;:0,&quot;max&quot;:60,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeTitleLetterSpacingMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:-0.025,&quot;min&quot;:-0.05,&quot;max&quot;:0.15,&quot;step&quot;:0.005,&quot;unit&quot;:&quot;em&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeTitleLineHeightMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.9,&quot;min&quot;:0.9,&quot;max&quot;:1.6,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeSubtitleLetterSpacingMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:-0.03,&quot;min&quot;:-0.05,&quot;max&quot;:0.15,&quot;step&quot;:0.005,&quot;unit&quot;:&quot;em&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeSubtitleLineHeightMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:1,&quot;max&quot;:2.2,&quot;step&quot;:0.01,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeTitleSubtitleGapMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:51,&quot;min&quot;:0,&quot;max&quot;:60,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeTextPaddingXMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:24,&quot;min&quot;:8,&quot;max&quot;:64,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeTextMaxWidthMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:340,&quot;min&quot;:180,&quot;max&quot;:640,&quot;step&quot;:10,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeSizeMobileCentered&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.4,&quot;min&quot;:1,&quot;max&quot;:2.2,&quot;step&quot;:0.05,&quot;section&quot;:&quot;Globo/Alcance Global&quot;},&quot;globeTitleOffsetYMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:56,&quot;min&quot;:0,&quot;max&quot;:320,&quot;step&quot;:4,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;},&quot;globeSubtitleOffsetYMobile&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:56,&quot;min&quot;:0,&quot;max&quot;:320,&quot;step&quot;:4,&quot;unit&quot;:&quot;px&quot;,&quot;section&quot;:&quot;Globo/Tipografia&quot;}}">
+class Component extends DCLogic {
+  state = { navHidden: false, activeSection: "inicio", servIndex: 0, servDir: 1, faqOpen: null };
+
+  componentDidMount() {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    this._applyViewportUnit();
+    this._onResizeVH = () => this._applyViewportUnit();
+    window.addEventListener("resize", this._onResizeVH);
+    this._onScroll = () => {
+      const nav = 72;
+      const hide = window.scrollY > window.innerHeight - nav;
+      let active = "inicio";
+      for (const pair of [["inicio", "inicio"], ["estrategia", "estrategia"], ["servicos", "servicos"], ["zv-cta", "contato"]]) {
+        const el = document.getElementById(pair[0]);
+        if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.4) active = pair[1];
+      }
+      if (hide !== this.state.navHidden || active !== this.state.activeSection) {
+        this.setState({ navHidden: hide, activeSection: active });
+      }
+      // Blur progressivo do Globo enquanto a Timeline sobe por cima (0 → 20px).
+      // Só entra em jogo DEPOIS que os 4 estados internos do Globo terminam
+      // (Estado 3 concluído) — durante os Estados 0-2 o blur fica travado em 0,
+      // mesmo que scrollY tenha qualquer desvio residual.
+      if (this._snapStops) {
+        const st = this._snapStops();
+        const gTop = st[0], wTop = st[1];
+        const cv = document.getElementById("zv-globe-canvas");
+        if ((this._globeState ?? 0) < 3) {
+          if (cv) cv.style.filter = "none";
+        } else {
+          const prog = Math.max(0, Math.min(1, (window.scrollY - gTop) / Math.max(1, wTop - gTop)));
+          if (cv) cv.style.filter = prog > 0 ? "blur(" + (prog * 20).toFixed(2) + "px)" : "none";
+        }
+        // Uma vez que "Pare de postar" cobriu o Globo por completo, ele trava
+        // definitivamente: fica oculto (não pode mais aparecer/mover em
+        // nenhuma transição seguinte, ex. "Pare de postar" -> "O que fazemos").
+        // Volta a ficar visível normalmente se o usuário rolar de volta pra cima.
+        const gSection = document.getElementById("globo");
+        if (gSection) gSection.style.visibility = (wTop > gTop && window.scrollY >= wTop) ? "hidden" : "visible";
+        // Travamento ABSOLUTO no rodapé: enquanto os estados internos (0-2) não
+        // terminam, qualquer scrollY além de gTop — inclusive overshoot de flings
+        // muito rápidos que ultrapassariam wTop num único frame — é puxado de volta
+        // para gTop. Assim nenhum estado é pulado e a Seção 3 nunca sobe antes da hora.
+        if (this._snapActive && this._snapActive() && !this._snapAnimating && (this._globeState ?? 0) < 3 && wTop > gTop && window.scrollY > gTop) {
+          window.scrollTo(0, gTop);
+        }
+        // Reentrando pelo topo (vindo da Hero): reseta o estado interno do Globo.
+        if (window.scrollY < gTop - 2 && this._globeState !== 0 && !this._snapAnimating) {
+          this._globeState = 0;
+          this._renderGlobeState(0);
+        }
+      }
+      this._reconcileServ();
+    };
+    window.addEventListener("scroll", this._onScroll, { passive: true });
+    this._onScroll();
+    // Empilhamento 2→3: Seção 2 fica sticky; a wrapper ganha altura extra para a
+    // Seção 3 deslizar por cima até restar só uma faixa (strip) da Seção 2 no topo.
+    this._layoutStack = () => {
+      const s2 = document.getElementById("estrategia");
+      const wrap = document.getElementById("zv-stack-wrap");
+      const s3 = document.getElementById("servicos");
+      if (!s2 || !wrap || !s3) return;
+      const strip = 32;
+      // Timeline com scroll livre: Estrategia em fluxo normal (sem sticky) e
+      // Servicos logo abaixo, sem sobreposicao. A subida de Servicos e feita por
+      // um snap dedicado (_maybeRiseServicos), nao pelo empilhamento sticky.
+      wrap.style.height = "";
+      s3.style.marginTop = "0px";
+      // Globo sticky: spacer cobre SÓ a subida Globo->Estrategia. Assim que
+      // Estrategia cobre o Globo por completo, o spacer termina e o Globo
+      // destrava e congela naquele ponto — não deve continuar "sticky" durante
+      // a subida seguinte (Estrategia->Servicos), senão ele volta a aparecer
+      // através do glass de Servicos.
+      const globe = document.getElementById("globo");
+      const gwrap = document.getElementById("zv-globe-wrap");
+      const secoes = document.getElementById("zv-secoes-wrap");
+      if (globe && gwrap && secoes) {
+        const gh = globe.offsetHeight;
+        const rise = gh; // subida Globo -> Estrategia
+        gwrap.style.height = (gh + rise) + "px";
+        secoes.style.marginTop = (-rise) + "px";
+      }
+    };
+    window.addEventListener("resize", this._layoutStack);
+    this._layoutStack();
+    const s2El = document.getElementById("estrategia");
+    if (window.ResizeObserver && s2El) {
+      this._stackRO = new ResizeObserver(this._layoutStack);
+      this._stackRO.observe(s2El);
+      const gEl = document.getElementById("globo");
+      if (gEl) this._stackRO.observe(gEl);
+    }
+    // ===== Scroll-snap: SÓ no trecho Hero <-> Seção 2 <-> Seção 3 =====
+    this._snapIndex = 0;
+    this._snapAnimating = false;
+    this._wheelAccum = 0;
+    this._touchDelta = 0;
+    this._snapStops = () => {
+      const wrap = document.getElementById("zv-stack-wrap");
+      const s2 = document.getElementById("estrategia");
+      const hero = document.getElementById("inicio");
+      if (!wrap || !s2) return [0, 0, 0];
+      const strip = 32;
+      const sy = window.scrollY;
+      // gTop: posição estável do topo do Globo (Hero não é sticky). Globo agora é
+      // sticky, então seu próprio rect não serve de referência quando "grudado".
+      // Trava onde os estados rodam sobre preto puro (antes de a Timeline cobrir).
+      let gTop = (hero ? (hero.getBoundingClientRect().top + sy + hero.offsetHeight) : 0) + (this.props.globeEntryScrollGap ?? 80);
+      const wTop = wrap.getBoundingClientRect().top + sy;
+      // PROBLEMA 1: os estados internos do Globo devem rodar ANTES de a Timeline
+      // entrar na tela. O ponto de travamento (gTop) nunca pode passar de onde o
+      // TOPO da Timeline encosta na base da viewport — senão a Timeline "espia"
+      // por baixo enquanto os estados 0-2 acontecem. Usa innerHeight vivo (não
+      // 100vh), então acompanha também a barra de endereço do mobile.
+      const estrTop = s2.getBoundingClientRect().top + sy;
+      const offMax = estrTop - (window.innerHeight || 0);
+      if (gTop > offMax) gTop = Math.max(0, offMax);
+      if (gTop > wTop - 40) gTop = Math.max(0, wTop - 40);
+      return [gTop, wTop];
+    };
+    this._nearestStop = (y, stops) => {
+      let best = 0, bd = Infinity;
+      for (let i = 0; i < stops.length; i++) {
+        const d = Math.abs(y - stops[i]);
+        if (d < bd) { bd = d; best = i; }
+      }
+      return best;
+    };
+    this._snapTween = (from, to, dur, cb) => {
+      if (this._snapRAF) cancelAnimationFrame(this._snapRAF);
+      const done = () => { document.documentElement.style.scrollBehavior = ""; cb && cb(); };
+      if (dur <= 0 || Math.abs(to - from) < 1) { window.scrollTo(0, to); done(); return; }
+      document.documentElement.style.scrollBehavior = "auto";
+      const t0 = performance.now();
+      const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      const step = now => {
+        const t = Math.min(1, (now - t0) / dur);
+        window.scrollTo(0, from + (to - from) * ease(t));
+        if (t < 1) this._snapRAF = requestAnimationFrame(step);
+        else done();
+      };
+      this._snapRAF = requestAnimationFrame(step);
+    };
+    this._snapGo = (target, stops) => {
+      this._snapAnimating = true;
+      this._snapIndex = target;
+      if (target === 0) { this._globeState = 3; this._renderGlobeState(3); }
+      const dur = this.props.scrollSnapTransitionDuration ?? 750;
+      this._snapTween(window.scrollY, stops[target], dur, () => {
+        setTimeout(() => { this._snapAnimating = false; this._wheelAccum = 0; }, 60);
+      });
+    };
+    // Estados internos do Globo (0=centro,1=dir+texto esq,2=esq+texto dir,3=centro)
+    this._globeState = this._globeState || 0;
+    this._globeGo = (target) => {
+      this._snapAnimating = true;
+      this._globeState = target;
+      this._renderGlobeState(target);
+      const dur = this.props.globeStateTransitionDuration ?? 750;
+      this._globeFast = true;
+      clearTimeout(this._globeFastT);
+      this._globeFastT = setTimeout(() => { this._globeFast = false; }, dur);
+      clearTimeout(this._globeBlockT);
+      this._globeBlockT = setTimeout(() => { this._snapAnimating = false; this._wheelAccum = 0; }, dur + 40);
+    };
+    // Intercepta o passo no Globo: avança/recua estado interno em vez de rolar.
+    // Retorna true se consumiu o passo (o chamador não deve dar snap de scroll).
+    this._globeStep = (d, idx) => {
+      if (idx !== 0) return false;
+      if (d > 0 && this._globeState < 3) { this._globeGo(this._globeState + 1); return true; }
+      if (d < 0 && this._globeState > 0) { this._globeGo(this._globeState - 1); return true; }
+      return false;
+    };
+    this._snapActive = () => this.props.scrollSnapEnabled !== false;
+    this._onWheel = (e) => {
+      if (!this._snapActive()) return;
+      if (this._servAnimating) { e.preventDefault(); return; }
+      { const sd = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0); if (sd !== 0 && this._servTransition(sd)) { e.preventDefault(); return; } }
+      const stops = this._snapStops();
+      const last = stops.length - 1;
+      const y = window.scrollY;
+      if (y < stops[0] - 2 || y > stops[last] + 2) { this._wheelAccum = 0; return; }
+      if (this._snapAnimating) { e.preventDefault(); return; }
+      const idx = this._nearestStop(y, stops);
+      const dir = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0);
+      if (dir === 0) return;
+      if (idx >= last && dir > 0) { this._wheelAccum = 0; return; }
+      if (idx <= 0 && dir < 0 && this._globeState <= 0) { this._wheelAccum = 0; return; }
+      e.preventDefault();
+      this._wheelAccum += e.deltaY;
+      const th = this.props.scrollSnapThreshold ?? 12;
+      if (Math.abs(this._wheelAccum) < th) return;
+      const d = this._wheelAccum > 0 ? 1 : -1;
+      this._wheelAccum = 0;
+      if (this._globeStep(d, idx)) return;
+      const target = Math.max(0, Math.min(last, idx + d));
+      if (target !== idx) this._snapGo(target, stops);
+    };
+    this._onKeySnap = (e) => {
+      if (!this._snapActive()) return;
+      const stops = this._snapStops();
+      const last = stops.length - 1;
+      const y = window.scrollY;
+      if (y < stops[0] - 2 || y > stops[last] + 2) return;
+      let d = 0;
+      if (e.key === "ArrowDown" || e.key === "PageDown") d = 1;
+      else if (e.key === "ArrowUp" || e.key === "PageUp") d = -1;
+      else return;
+      if (this._servAnimating) { e.preventDefault(); return; }
+      if (this._servTransition(d)) { e.preventDefault(); return; }
+      if (this._snapAnimating) { e.preventDefault(); return; }
+      const idx = this._nearestStop(y, stops);
+      if (idx >= last && d > 0) return;
+      if (idx <= 0 && d < 0 && this._globeState <= 0) return;
+      e.preventDefault();
+      if (this._globeStep(d, idx)) return;
+      const target = Math.max(0, Math.min(last, idx + d));
+      if (target !== idx) this._snapGo(target, stops);
+    };
+    this._onTouchStart = (e) => { this._touchY = e.touches[0].clientY; this._touchDelta = 0; };
+    this._onTouchMove = (e) => {
+      if (!this._snapActive()) return;
+      if (this._servAnimating) { e.preventDefault(); return; }
+      { const dyv = this._touchY - e.touches[0].clientY; const sd = dyv > 0 ? 1 : -1; const z = this._servZone && this._servZone(); if (z) { const y = window.scrollY; if ((!this._servCovered && sd > 0 && y >= z.triggerY - 2 && y < z.coverY - 2) || (this._servCovered && sd < 0 && y <= z.coverY + 2 && y > z.pinY + 2)) { e.preventDefault(); this._touchDelta = dyv; return; } } }
+      const stops = this._snapStops();
+      const last = stops.length - 1;
+      const y = window.scrollY;
+      if (y < stops[0] - 2 || y > stops[last] + 2) return;
+      if (this._snapAnimating) { e.preventDefault(); return; }
+      const idx = this._nearestStop(y, stops);
+      const dy = this._touchY - e.touches[0].clientY;
+      const dir = dy > 0 ? 1 : -1;
+      if (idx >= last && dir > 0) return;
+      if (idx <= 0 && dir < 0) return;
+      e.preventDefault();
+      this._touchDelta = dy;
+    };
+    this._onTouchEnd = () => {
+      if (!this._snapActive()) return;
+      if (this._servAnimating) return;
+      { const dyv = this._touchDelta || 0; if (Math.abs(dyv) > 4) { const sd = dyv > 0 ? 1 : -1; if (this._servTransition(sd)) { this._touchDelta = 0; return; } } }
+      const stops = this._snapStops();
+      const last = stops.length - 1;
+      const y = window.scrollY;
+      if (y < stops[0] - 2 || y > stops[last] + 2 || this._snapAnimating) return;
+      const idx = this._nearestStop(y, stops);
+      const th = this.props.scrollSnapTouchThreshold ?? 50;
+      const dy = this._touchDelta || 0;
+      this._touchDelta = 0;
+      if (Math.abs(dy) < th) { if (idx !== 0) this._snapGo(idx, stops); return; }
+      const d = dy > 0 ? 1 : -1;
+      if (idx >= last && d > 0) return;
+      if (idx <= 0 && d < 0 && this._globeState <= 0) return;
+      if (this._globeStep(d, idx)) return;
+      const target = Math.max(0, Math.min(last, idx + d));
+      this._snapGo(target, stops);
+    };
+    window.addEventListener("wheel", this._onWheel, { passive: false });
+    window.addEventListener("keydown", this._onKeySnap);
+    window.addEventListener("touchstart", this._onTouchStart, { passive: true });
+    window.addEventListener("touchmove", this._onTouchMove, { passive: false });
+    window.addEventListener("touchend", this._onTouchEnd, { passive: true });
+
+    this._initGlobe();
+    this._initStars();
+    this._onResizeStars = () => this._applyStarsTweaks();
+    window.addEventListener("resize", this._onResizeStars);
+    this._applyAllTweaks();
+    this._onResizeHeader = () => this._applyResponsiveHeader();
+    window.addEventListener("resize", this._onResizeHeader);
+    this._onResizeContact = () => this._applyContactResponsive();
+    window.addEventListener("resize", this._onResizeContact);
+    this._onResizeFaq = () => this._applyFaqTweaks();
+    window.addEventListener("resize", this._onResizeFaq);
+    // Navegação animada pela navbar: suspende o scroll-snap durante o percurso e
+    // sincroniza os estados internos (Globo/Servicos) ao chegar no destino.
+    this._navGo = (target) => {
+      let y = 0;
+      if (target !== "inicio") {
+        const el = document.getElementById(target);
+        if (!el) return;
+        y = el.getBoundingClientRect().top + window.scrollY;
+      }
+      y = Math.max(0, Math.min(y, document.documentElement.scrollHeight - window.innerHeight));
+      if (this._navRAF) cancelAnimationFrame(this._navRAF);
+      if (this._snapRAF) cancelAnimationFrame(this._snapRAF);
+      // O easing do percurso é calculado aqui no rAF; o scroll por frame precisa
+      // ser instantâneo. Sob scroll-behavior:smooth cada scrollTo viraria um
+      // scroll suave do browser reiniciado a cada frame => navegação em câmera lenta.
+      document.documentElement.style.scrollBehavior = "auto";
+      this._snapAnimating = true;
+      this._servAnimating = true;
+      const from = window.scrollY, t0 = performance.now();
+      const dur = Math.max(1, this.props.navScrollDuration ?? 1300);
+      const ease = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / dur);
+        window.scrollTo(0, from + (y - from) * ease(t));
+        if (t < 1) { this._navRAF = requestAnimationFrame(step); return; }
+        this._navRAF = null;
+        document.documentElement.style.scrollBehavior = "";
+        const st = this._snapStops ? this._snapStops() : [0, 0];
+        const gs = window.scrollY < st[0] - 2 ? 0 : 3;
+        this._globeState = gs;
+        this._renderGlobeState(gs);
+        this._servAnimating = false;
+        this._snapAnimating = false;
+        this._wheelAccum = 0;
+        this._reconcileServ();
+      };
+      this._navRAF = requestAnimationFrame(step);
+    };
+    [["zv-pill-1", "inicio"], ["zv-pill-2", "servicos"], ["zv-pill-3", "zv-cta"]].forEach((pair) => {
+      const el = document.getElementById(pair[0]);
+      if (el) el.onclick = (e) => { e.preventDefault(); this._navGo(pair[1]); };
+    });
+  }
+
+  componentDidUpdate() {
+    this._applyAllTweaks();
+  }
+
+  _applyAllTweaks() {
+    this._applyGlobalTweaks();
+    this._applyHeaderTweaks();
+    this._applyHeroTweaks();
+    this._applyEstrategiaTweaks();
+    this._applyServicosTweaks();
+    this._applyFaqTweaks();
+    this._applyGlobeTweaks();
+    this._applyStarsTweaks();
+    this._applyContactTweaks();
+  }
+
+  // ===== Campo de estrelas com parallax (camada de fundo do Globo) =====
+  // Camada DOM atrás do canvas: as animações do globo são transforms no CANVAS,
+  // então uma camada separada permite deslocamento FRACIONÁRIO (parallax real).
+  // Animada só por transform/opacity via rAF, com a mesma pausa do globo.
+  _initStars() {
+    this._starLayers = [];
+    this._starPhase = 0;
+    this._starCur = { x: 0, y: 0, sc: 0 };
+    // Fração do MOVIMENTO do globo que cada plano acompanha (distante -> próximo).
+    // Sempre bem < 1 => estrelas se deslocam menos que o globo (profundidade).
+    this._starLayerFactors = [0.2, 0.38, 0.56];
+    const cont = document.getElementById("zv-globe-stars");
+    let last = performance.now();
+    const loop = (now) => {
+      this._starRAF = requestAnimationFrame(loop);
+      const dt = Math.min(0.1, (now - last) / 1000); last = now;
+      if (!cont || this.props.starsEnabled === false || !this._starLayers.length) return;
+      // Mesma pausa do globo: fora da viewport, ou já rolou além da seção.
+      if (!this._globeVisible) return;
+      if (this._snapStops) { const st = this._snapStops(); if (window.scrollY >= st[1]) return; }
+      const p = this.props;
+      const intensity = p.starsParallaxIntensity ?? 0.5;
+      const off = p.globeSideOffset ?? 26;      // % da viewport (mesmo do transform do globo)
+      const zoom = p.globeZoomAmount ?? 0.15;
+      const vw = window.innerWidth || 1;
+      const vh = window.innerHeight || 1;
+      const s = this._globeState || 0;
+      // Deslocamento HORIZONTAL do globo em px (translate em % da largura da viewport).
+      // Estado 1 -> direita (+), Estado 2 -> esquerda (-), Estados 0/3 -> repouso (0).
+      let gx = 0, gsc = 0;
+      if (s === 1) { gx = (off / 100) * vw; gsc = zoom; }
+      else if (s === 2) { gx = -(off / 100) * vw; gsc = zoom; }
+      // Deslocamento VERTICAL conforme o scroll dentro da seção (sutil).
+      let gy = 0;
+      if (this._snapStops) { const st = this._snapStops(); gy = Math.max(-1, Math.min(1, (window.scrollY - st[0]) / vh)) * vh * 0.18; }
+      // Easing por frame — aproxima a curva/duração da transição de estado do globo (~750ms).
+      const k = Math.min(1, dt * 3.2);
+      this._starCur.x += (gx - this._starCur.x) * k;
+      this._starCur.y += (gy - this._starCur.y) * k;
+      this._starCur.sc += (gsc - this._starCur.sc) * k;
+      // Drift contínuo sutil (atmosfera viva mesmo no estado de repouso).
+      this._starPhase += dt * 0.18;
+      const dx = Math.sin(this._starPhase) * 9;
+      const dy = Math.cos(this._starPhase * 0.7) * 6;
+      for (let i = 0; i < this._starLayers.length; i++) {
+        const f = this._starLayerFactors[i] ?? 0.3;   // fração do movimento do globo p/ este plano
+        const x = (this._starCur.x * f * intensity) + dx * f;
+        const y = (this._starCur.y * f * intensity) + dy * f;
+        const sc = 1 + this._starCur.sc * f * intensity * 0.4;   // escala bem menor que a do globo
+        this._starLayers[i].style.transform = "translate3d(" + x.toFixed(2) + "px," + y.toFixed(2) + "px,0) scale(" + sc.toFixed(4) + ")";
+      }
+    };
+    this._starRAF = requestAnimationFrame(loop);
+  }
+
+  _buildStars() {
+    const cont = document.getElementById("zv-globe-stars");
+    if (!cont) return;
+    const p = this.props;
+    cont.innerHTML = "";
+    this._starLayers = [];
+    const planes = 3;
+    const mobile = window.innerWidth < 768;
+    const total = Math.round(mobile ? (p.starsCountMobile ?? 28) : (p.starsCount ?? 60));
+    const dist = [0.45, 0.33, 0.22];       // mais estrelas nos planos distantes
+    const depthVis = [0.7, 0.85, 1.0];      // aparência: distantes menores e mais apagados
+    const color = p.starsColor ?? "#cdd6ff";
+    const smin = p.starsSizeMin ?? 1, smax = Math.max(smin, p.starsSizeMax ?? 2.5);
+    const maxOp = p.starsOpacity ?? 0.5;
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    for (let li = 0; li < planes; li++) {
+      const layer = document.createElement("div");
+      layer.style.cssText = "position:absolute; inset:-8%; will-change:transform;";
+      const n = Math.round(total * dist[li]);
+      for (let i = 0; i < n; i++) {
+        const d = document.createElement("div");
+        const sz = rnd(smin, smax) * depthVis[li];
+        const op = rnd(0.35, 1) * maxOp * (0.55 + depthVis[li] * 0.45);
+        d.style.cssText = "position:absolute; top:" + rnd(0, 100).toFixed(3) + "%; left:" + rnd(0, 100).toFixed(3) + "%; width:" + sz.toFixed(2) + "px; height:" + sz.toFixed(2) + "px; border-radius:50%; background:" + color + "; opacity:" + op.toFixed(3) + ";";
+        layer.appendChild(d);
+      }
+      cont.appendChild(layer);
+      this._starLayers.push(layer);
+    }
+  }
+
+  _applyStarsTweaks() {
+    const cont = document.getElementById("zv-globe-stars");
+    if (!cont) return;
+    const p = this.props;
+    cont.style.display = (p.starsEnabled === false) ? "none" : "block";
+    const sig = [p.starsCount, p.starsCountMobile, p.starsOpacity, p.starsSizeMin, p.starsSizeMax, p.starsColor, window.innerWidth < 768].join("|");
+    if (sig !== this._starsSig) { this._starsSig = sig; this._buildStars(); }
+  }
+
+  _applyContactTweaks() {
+    const p = this.props;
+    const pad = (p.sectionVerticalPadding ?? 120) + "px";
+    // ---- Bloco 1 — CTA ----
+    this._setLeaf("zv-cta-micro", p.ctaMicroText ?? "PRONTO PRA COMEÇAR? →");
+    this._setLeaf("zv-cta-headline", p.ctaHeadlineText ?? "Fale com a gente");
+    const cta = document.getElementById("zv-cta");
+    if (cta) cta.style.background = p.ctaBackgroundColor ?? "#ffffff";
+    const glass = document.getElementById("zv-cta-glass");
+    if (glass) {
+      glass.style.background = "rgba(0,0,0," + (p.ctaGlassOpacity ?? 0.08) + ")";
+      const blur = (p.ctaGlassBlur ?? 20) + "px";
+      glass.style.backdropFilter = "blur(" + blur + ") saturate(150%)";
+      glass.style.webkitBackdropFilter = "blur(" + blur + ") saturate(150%)";
+      glass.style.border = "1px solid rgba(0,0,0," + (p.ctaGlassBorderOpacity ?? 0.08) + ")";
+      glass.style.padding = (p.ctaGlassPadding ?? 28) + "px clamp(28px, 4vw, 56px)";
+      glass.style.borderRadius = (p.ctaGlassBorderRadius ?? 999) + "px";
+      glass.style.minHeight = (p.ctaGlassHeight ?? 136) + "px";
+      glass.style.maxWidth = (p.ctaGlassWidth ?? 1200) + "px";
+    }
+    const micro = document.getElementById("zv-cta-micro");
+    if (micro) {
+      micro.style.color = p.ctaMicroTextColor ?? "#4b4b4b";
+      micro.style.marginBottom = (p.ctaMicroTextSpacing ?? 24) + "px";
+      const center = (p.ctaMicroTextAlignment ?? "center") === "center";
+      micro.style.alignSelf = center ? "center" : "flex-start";
+      micro.style.textAlign = center ? "center" : "left";
+    }
+    const head = document.getElementById("zv-cta-headline");
+    if (head) {
+      head.style.color = p.ctaHeadlineColor ?? "#544993";
+      head.style.fontSize = "clamp(2.75rem, 6vw, " + (p.ctaHeadlineSize ?? 6) + "rem)";
+    }
+    const btn = document.getElementById("zv-cta-button");
+    const bsz = p.ctaButtonSize ?? 80;
+    if (btn) {
+      btn.style.width = bsz + "px"; btn.style.height = bsz + "px";
+      btn.style.background = p.ctaButtonColor ?? "#FF5A2E";
+      // Selo pendurado: sobrepõe a borda inferior da barra; só os X% superiores ficam sobre ela.
+      const overlap = p.ctaButtonOverlapPercent ?? 20;
+      btn.style.transform = "translate(-50%, " + (100 - overlap) + "%)";
+    }
+    const gwrap = document.getElementById("zv-cta-glass-wrap");
+    if (gwrap) {
+      const overlap = p.ctaButtonOverlapPercent ?? 20;
+      gwrap.style.marginBottom = Math.round(bsz * (100 - overlap) / 100) + "px";
+    }
+    const icon = document.getElementById("zv-cta-icon");
+    if (icon) icon.style.fill = p.ctaButtonIconColor ?? "#ffffff";
+    // ---- Bloco 2 — Footer ----
+    const foot = document.getElementById("zv-footer");
+    if (foot) {
+      foot.style.background = p.footerBackgroundColor ?? "#000000";
+      foot.style.paddingTop = pad;
+    }
+    const cols = document.getElementById("zv-footer-cols");
+    if (cols) { cols.style.columnGap = (p.footerColumnGap ?? 48) + "px"; cols.style.rowGap = (p.footerColumnGap ?? 48) + "px"; }
+    const brand = document.getElementById("zv-footer-brand");
+    if (brand) {
+      this._setLeaf("zv-footer-brand", p.footerBrandStatementText ?? "A agência que constrói seu caminho até o cliente®");
+      brand.style.fontSize = (p.footerBrandStatementSize ?? 1.75) + "rem";
+      brand.style.color = p.footerLinkColor ?? "#ffffff";
+    }
+    const labelColor = p.footerColumnLabelColor ?? "#8a8a8a";
+    ["zv-footer-label-1", "zv-footer-label-2"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.color = labelColor;
+    });
+    const linkColor = p.footerLinkColor ?? "#ffffff";
+    const hoverColor = p.footerLinkHoverColor ?? "#FF5A2E";
+    this._setLeaf("zv-footer-email", p.footerContactEmail ?? "zanviegroup@gmail.com");
+    this._setLeaf("zv-footer-phone", p.footerContactPhone ?? "(55) 00000-0000");
+    this._setLeaf("zv-footer-insta-handle", p.footerInstagramHandle ?? "@zanvie.group");
+    this._setLeaf("zv-footer-copyright", p.footerCopyrightText ?? "© 2026 Zanvie — Publicidade e Tráfego Pago. Todos os direitos reservados.");
+    const copy = document.getElementById("zv-footer-copyright");
+    if (copy) copy.style.color = p.footerCopyrightColor ?? "#6a6a6a";
+    const divider = document.getElementById("zv-footer-divider");
+    if (divider) divider.style.background = p.footerDividerColor ?? "#2a2a2a";
+    const email = document.getElementById("zv-footer-email");
+    if (email) email.href = "mailto:" + (p.footerContactEmail ?? "zanviegroup@gmail.com");
+    const instaUrl = p.footerInstagramUrl ?? "https://instagram.com/zanvie.group";
+    const ih = document.getElementById("zv-footer-insta-handle");
+    if (ih) ih.href = instaUrl;
+    const il = document.getElementById("zv-footer-insta-link");
+    if (il) il.href = instaUrl;
+    // Hover states (reassigned each update with latest tweak values)
+    [["zv-footer-email", true], ["zv-footer-phone", true], ["zv-footer-insta-handle", true], ["zv-footer-insta-link", false]].forEach(([id, isText]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.color = linkColor;
+      el.onmouseenter = () => el.style.color = hoverColor;
+      el.onmouseleave = () => el.style.color = linkColor;
+    });
+    const logo = document.getElementById("zv-footer-logo");
+    if (logo) logo.style.height = (p.footerLogoSize ?? 64) + "px";
+    this._applyContactResponsive();
+  }
+
+  _applyContactResponsive() {
+    const p = this.props;
+    const bp = p.mobileBreakpoint ?? 768;
+    const mobile = window.innerWidth <= bp;
+    const cta = document.getElementById("zv-cta");
+    if (cta) {
+      const pad = mobile ? (p.ctaMobileVerticalPadding ?? 48) : (p.sectionVerticalPadding ?? 120);
+      cta.style.paddingTop = pad + "px";
+      cta.style.paddingBottom = pad + "px";
+    }
+    const foot = document.getElementById("zv-footer");
+    if (foot) foot.style.paddingTop = (mobile ? (p.ctaMobileVerticalPadding ?? 48) : (p.sectionVerticalPadding ?? 120)) + "px";
+    const cols = document.getElementById("zv-footer-cols");
+    if (cols && mobile) { cols.style.rowGap = (p.footerMobileBlockGap ?? 28) + "px"; }
+    const divider = document.getElementById("zv-footer-divider");
+    if (divider) divider.style.margin = mobile ? ((p.footerMobileBlockGap ?? 28) + "px 0 " + Math.round((p.footerMobileBlockGap ?? 28) * 0.6) + "px") : "56px 0 24px";
+    const bottomRow = document.getElementById("zv-footer-bottom-row");
+    const logo = document.getElementById("zv-footer-logo");
+    if (bottomRow && logo) {
+      if (mobile) {
+        bottomRow.style.flexDirection = "column";
+        bottomRow.style.alignItems = "center";
+        bottomRow.style.textAlign = "center";
+        bottomRow.style.gap = Math.round((p.footerMobileBlockGap ?? 28) * 0.6) + "px";
+        logo.style.height = (p.footerLogoSizeMobile ?? 84) + "px";
+        bottomRow.appendChild(logo);
+      } else {
+        bottomRow.style.flexDirection = "row";
+        bottomRow.style.alignItems = "center";
+        bottomRow.style.textAlign = "left";
+        bottomRow.style.gap = "16px";
+        logo.style.height = (p.footerLogoSize ?? 64) + "px";
+      }
+    }
+  }
+
+  _initGlobe() {
+    const canvas = document.getElementById("zv-globe-canvas");
+    const section = document.getElementById("globo");
+    if (!canvas || !section) return;
+    if (!window.THREE) { this._globeTries = (this._globeTries || 0) + 1; if (this._globeTries < 80) setTimeout(() => this._initGlobe(), 120); return; }
+    const THREE = window.THREE;
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.z = 3.2;
+
+    const group = new THREE.Group();
+    group.rotation.z = 0.32;
+    scene.add(group);
+
+    // Continentes preenchidos (textura equirectangular desenhada a partir de geo-dados reais)
+    const R = 1;
+    const texCanvas = document.createElement("canvas");
+    texCanvas.width = 2048; texCanvas.height = 1024;
+    const texture = new THREE.CanvasTexture(texCanvas);
+    texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1);
+    // Esfera de preenchimento OPACA logo abaixo da superfície: torna o globo opaco,
+    // ocultando as estrelas (camada de fundo) onde há sobreposição. Escreve profundidade,
+    // então a grade traseira e os continentes do lado oposto ficam corretamente ocultos.
+    const fillMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(this.props.globeFillColor ?? "#000000") });
+    const fillMesh = new THREE.Mesh(new THREE.SphereGeometry(R * 0.995, 48, 32), fillMat);
+    group.add(fillMesh);
+    const contMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.FrontSide });
+    const contMesh = new THREE.Mesh(new THREE.SphereGeometry(R, 64, 48), contMat);
+    group.add(contMesh);
+
+    // Grade de latitude/longitude (linhas limpas) sobre os continentes
+    const gridGeo = this._buildGridGeometry(THREE, R * 1.004, 15, 15, 96);
+    const gridMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4 });
+    const grid = new THREE.LineSegments(gridGeo, gridMat);
+    group.add(grid);
+
+    // Alfinete (pin) fixo à superfície do globo — Santa Maria/RS por padrão
+    const pinMat = new THREE.MeshBasicMaterial({ color: 0xe02424, transparent: true });
+    const pin = new THREE.Group();
+    const pinHead = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), pinMat);
+    pinHead.position.y = 2.4;
+    const pinStalk = new THREE.Mesh(new THREE.ConeGeometry(0.5, 2.4, 12), pinMat);
+    pinStalk.position.y = 1.2;
+    pinStalk.rotation.x = Math.PI;
+    pin.add(pinStalk);
+    pin.add(pinHead);
+    pin.visible = false;
+    group.add(pin);
+
+    this._globe = { renderer, scene, camera, group, contMat, gridMat, fillMat, texture, texCanvas, THREE, pin, pinMat };
+    this._globeVisible = true;
+    this._updateGlobePin();
+    this._drawContinents(this.props.globeContinentColor ?? "#4a4a4a");
+
+    this._globeResize = () => {
+      this._applyGlobeSectionHeight();
+      this._applyGlobeTextLayout();
+      this._applyGlobeTypography();
+      this._applyGlobeCenterLayout();
+      const stageEl = document.getElementById("zv-globe-stage");
+      const w = stageEl ? stageEl.clientWidth : section.clientWidth, h = stageEl ? stageEl.clientHeight : section.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      const vFOV = camera.fov * Math.PI / 180;
+      const visH = 2 * Math.tan(vFOV / 2) * camera.position.z;
+      const visW = visH * camera.aspect;
+      const fit = Math.min(visH, visW);
+      const mobile = w < 768;
+      const sizeF = this.props.globeSize ?? 0.42;
+      const mScale = mobile ? (this.props.globeMobileScale ?? 0.72) : 1;
+      group.scale.setScalar((fit / 2) * sizeF * mScale);
+      this._updateGlobeTextBlur(0, "linear");
+    };
+    this._globeResize();
+    window.addEventListener("resize", this._globeResize);
+    requestAnimationFrame(() => requestAnimationFrame(() => this._globeResize()));
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this._globeResize());
+    if (window.IntersectionObserver) {
+      this._globeIO = new IntersectionObserver((ents) => { this._globeVisible = ents[0].isIntersecting; }, { threshold: 0.01 });
+      this._globeIO.observe(section);
+    }
+    let last = performance.now();
+    const loop = (now) => {
+      this._globeRAF = requestAnimationFrame(loop);
+      const dt = Math.min(0.1, (now - last) / 1000); last = now;
+      if (!this._globeVisible) return;
+      if (this._snapStops) { const st = this._snapStops(); if (window.scrollY >= st[1]) return; }
+      const spd = (this._globeFast ? (this.props.globeFastRotationSpeed ?? 0.6) : (this.props.globeRotationSpeed ?? 0.12));
+      if (this._globeLockActive) {
+        const tgt = this._globeRotTarget ?? group.rotation.y;
+        group.rotation.y += (tgt - group.rotation.y) * Math.min(1, dt * 4);
+      } else {
+        group.rotation.y += spd * dt;
+      }
+      // Alfinete: some (com fade) quando a coordenada gira para a face oposta da esfera.
+      if (this._globe && this._globe.pin) {
+        const pinObj = this._globe.pin;
+        if (this._globePinGate) {
+          const tv = this._globe.tmpV || (this._globe.tmpV = new THREE.Vector3());
+          tv.copy(pinObj.position).applyEuler(group.rotation);
+          const dot = tv.z / (tv.length() || 1);
+          const op = Math.max(0, Math.min(1, (dot + 0.05) / 0.3));
+          pinObj.visible = op > 0.02;
+          this._globe.pinMat.opacity = op;
+        } else {
+          pinObj.visible = false;
+        }
+      }
+      renderer.render(scene, camera);
+    };
+    this._globeRAF = requestAnimationFrame(loop);
+    this._renderGlobeState(this._globeState || 0);
+  }
+
+  _updateGlobePin() {
+    if (!this._globe || !this._globe.pin) return;
+    const p = this.props, THREE = this._globe.THREE, pin = this._globe.pin;
+    const lat = p.globePinLatitude ?? -29.68, lon = p.globePinLongitude ?? -53.81;
+    const phi = (90 - lat) * Math.PI / 180;
+    const theta = (lon + 180) * Math.PI / 180;
+    const x = -Math.sin(phi) * Math.cos(theta);
+    const z = Math.sin(phi) * Math.sin(theta);
+    const y = Math.cos(phi);
+    pin.position.set(x, y, z);
+    pin.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(x, y, z).normalize());
+    pin.scale.setScalar(p.globePinSize ?? 0.05);
+    this._globe.pinMat.color.set(p.globePinColor ?? "#e02424");
+    this._globe.pinBaseAngle = Math.atan2(x, z);
+  }
+
+  _applyGlobePinState(state) {
+    if (!this._globe || !this._globe.pin) return;
+    const s = state ?? (this._globeState || 0);
+    const showOn3 = this.props.globePinVisibleOnState3 === true;
+    // Gate por estado; a visibilidade final (face visível da esfera) é refinada por frame no loop.
+    this._globePinGate = (s === 1 || s === 2 || (s === 3 && showOn3));
+    if (!this._globePinGate) this._globe.pin.visible = false;
+  }
+
+  _renderGlobeState(state) {
+    const cv = document.getElementById("zv-globe-canvas");
+    const center = document.getElementById("zv-globe-center");
+    const left = document.getElementById("zv-globe-side-left");
+    const right = document.getElementById("zv-globe-side-right");
+    const dur = this.props.globeStateTransitionDuration ?? 750;
+    const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+    const off = this.props.globeSideOffset ?? 26;
+    const zoom = 1 + (this.props.globeZoomAmount ?? 0.15);
+    let tx = 0, sc = 1, ty = 0;
+    const mobileC = window.innerWidth <= (this.props.mobileBreakpoint ?? 768);
+    this._applyGlobeCenterLayout();
+    if (state === 1) { tx = off; sc = zoom * (this.props.globeRightStateScale ?? 1.12); ty = -(this.props.globeRightStateOffsetY ?? 6); }
+    else if (state === 2) { tx = -off; sc = zoom; ty = (this.props.globeLeftStateOffsetY ?? 6); }
+    else if (mobileC) { sc = this.props.globeSizeMobileCentered ?? 1.4; }  // PROBLEMA 3: globo maior no mobile nos estados 0 e 3
+    if (cv) {
+      cv.style.transition = "transform " + dur + "ms " + ease;
+      cv.style.transform = "translate(" + tx + "%, " + ty + "%) scale(" + sc + ")";
+    }
+    // Estado 1: trava a rotação com o alfinete (Santa Maria) de frente para a câmera.
+    // Sempre continua no MESMO sentido do giro contínuo (nunca reverte): se acabou de
+    // passar por Santa Maria, completa a volta inteira até chegar de novo à posição.
+    if (this._globe && this._globe.group && state === 1 && this.props.globeState1RotationLocked !== false) {
+      const cur = this._globe.group.rotation.y;
+      const twoPi = Math.PI * 2;
+      const dlt = ((((-(this._globe.pinBaseAngle ?? 0)) - cur) % twoPi) + twoPi) % twoPi;
+      this._globeRotTarget = cur + dlt;
+      this._globeLockActive = true;
+    } else {
+      this._globeLockActive = false;
+    }
+    this._applyGlobePinState(state);
+    const fs = this.props.globeTextFontSize ?? 34;
+    ["zv-globe-left-title", "zv-globe-right-title"].forEach(id => { const t = document.getElementById(id); if (t) t.style.fontSize = fs + "px"; });
+    ["zv-globe-left-sub", "zv-globe-right-sub"].forEach(id => { const s = document.getElementById(id); if (s) s.style.fontSize = Math.round(fs * 0.6) + "px"; });
+    const show = (el, visible, slideX) => {
+      if (!el) return;
+      el.style.transition = "opacity " + dur + "ms " + ease + ", transform " + dur + "ms " + ease;
+      el.style.opacity = visible ? "1" : "0";
+      el.style.transform = "translate(" + (visible ? 0 : slideX) + "px, -50%)";
+    };
+    if (center) {
+      center.style.transition = "opacity " + dur + "ms " + ease;
+      center.style.opacity = (state === 0 || state === 3) ? "1" : "0";
+      center.style.pointerEvents = (state === 0 || state === 3) ? "auto" : "none";
+    }
+    show(left, state === 1, -40);
+    show(right, state === 2, 40);
+    this._updateGlobeTextBlur(dur, ease);
+  }
+
+  _updateGlobeTextBlur(dur, ease) {
+    const p = this.props;
+    const enabled = p.globeTextBlurEnabled !== false;
+    const state = this._globeState || 0;
+    const stage = document.getElementById("zv-globe-stage");
+    if (!stage) return;
+    const el = (id) => document.getElementById(id);
+    const mobile = window.innerWidth <= (p.mobileBreakpoint ?? 768);
+    const split = mobile && (state === 0 || state === 3);   // título/subtítulo separados no mobile 0/3
+    const centerVis = (state === 0 || state === 3);
+    // Posição de LAYOUT (ignora transform) relativa ao stage — assim a área de
+    // blur acompanha o texto em qualquer posição (centralizado, flex, lateral).
+    const offIn = (node) => {
+      let x = 0, y = 0, n = node;
+      while (n && n !== stage && n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+      return { x, y };
+    };
+    const boxes = [
+      { el: el("zv-globe-blur-center"), txt: split ? el("zv-globe-h") : el("zv-globe-center"), visible: centerVis, slideX: 0, vCenter: !split, hCenter: !split },
+      { el: el("zv-globe-blur-center-sub"), txt: el("zv-globe-sub"), visible: split && centerVis, slideX: 0, vCenter: false, hCenter: false },
+      { el: el("zv-globe-blur-left"), txt: el("zv-globe-side-left"), visible: state === 1, slideX: -40, vCenter: true, hCenter: false },
+      { el: el("zv-globe-blur-right"), txt: el("zv-globe-side-right"), visible: state === 2, slideX: 40, vCenter: true, hCenter: false },
+    ];
+    const intensity = p.globeTextBlurIntensity ?? 14;
+    const spread = p.globeTextBlurSpread ?? 24;
+    const feather = p.globeTextBlurFeather ?? 0.6;
+    const darkness = p.globeTextBlurDarkness ?? 0.12;
+    const innerStop = Math.max(10, Math.round(85 - feather * 65));
+    const mask = "radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,1) " + innerStop + "%, rgba(0,0,0,0) 100%)";
+    const d = dur ?? (this.props.globeStateTransitionDuration ?? 750);
+    const e = ease || "cubic-bezier(0.22, 1, 0.36, 1)";
+    boxes.forEach((b) => {
+      if (!b.el) return;
+      if (!enabled || !b.txt) { b.el.style.opacity = "0"; return; }
+      const w = b.txt.offsetWidth, h = b.txt.offsetHeight;
+      if (!w || !h) { b.el.style.opacity = "0"; return; }
+      const pos = offIn(b.txt);
+      const left = (b.hCenter ? pos.x - w / 2 : pos.x) - spread;
+      const top = (b.vCenter ? pos.y - h / 2 : pos.y) - spread;
+      b.el.style.left = left + "px";
+      b.el.style.top = top + "px";
+      b.el.style.width = (w + spread * 2) + "px";
+      b.el.style.height = (h + spread * 2) + "px";
+      b.el.style.backdropFilter = "blur(" + intensity + "px)";
+      b.el.style.webkitBackdropFilter = "blur(" + intensity + "px)";
+      b.el.style.background = "rgba(0,0,0," + darkness + ")";
+      b.el.style.maskImage = mask;
+      b.el.style.webkitMaskImage = mask;
+      b.el.style.transition = "opacity " + d + "ms " + e + ", transform " + d + "ms " + e;
+      b.el.style.opacity = b.visible ? "1" : "0";
+      b.el.style.transform = "translate(" + (b.visible ? 0 : b.slideX) + "px, 0)";
+    });
+  }
+
+  _buildGridGeometry(THREE, radius, latStep, lonStep, seg) {
+    const pts = [];
+    for (let lat = -90 + latStep; lat < 90; lat += latStep) {
+      const phi = lat * Math.PI / 180;
+      const r = radius * Math.cos(phi), y = radius * Math.sin(phi);
+      for (let i = 0; i < seg; i++) {
+        const a0 = (i / seg) * 2 * Math.PI, a1 = ((i + 1) / seg) * 2 * Math.PI;
+        pts.push(r * Math.cos(a0), y, r * Math.sin(a0), r * Math.cos(a1), y, r * Math.sin(a1));
+      }
+    }
+    for (let lon = 0; lon < 360; lon += lonStep) {
+      const th = lon * Math.PI / 180;
+      for (let i = 0; i < seg; i++) {
+        const p0 = -Math.PI / 2 + (i / seg) * Math.PI, p1 = -Math.PI / 2 + ((i + 1) / seg) * Math.PI;
+        pts.push(
+          radius * Math.cos(p0) * Math.cos(th), radius * Math.sin(p0), radius * Math.cos(p0) * Math.sin(th),
+          radius * Math.cos(p1) * Math.cos(th), radius * Math.sin(p1), radius * Math.cos(p1) * Math.sin(th)
+        );
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+    return g;
+  }
+
+  _drawContinents(color) {
+    if (!this._globe) return;
+    const cv = this._globe.texCanvas, ctx = cv.getContext("2d");
+    const paint = () => {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      if (!this._landFeatures || !window.d3) return;
+      const proj = window.d3.geoEquirectangular()
+        .scale(cv.width / (2 * Math.PI)).translate([cv.width / 2, cv.height / 2]);
+      const path = window.d3.geoPath(proj, ctx);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      path(this._landFeatures);
+      ctx.fill();
+      this._globe.texture.needsUpdate = true;
+    };
+    if (this._landFeatures) { paint(); return; }
+    if (this._landLoading) return;
+    this._landLoading = true;
+    fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json")
+      .then(r => r.json())
+      .then(topo => {
+        this._landFeatures = window.topojson.feature(topo, topo.objects.countries);
+        paint();
+      })
+      .catch(() => { this._landLoading = false; });
+  }
+
+  _applyViewportUnit() {
+    // PROBLEMA 5: publica a altura REAL da viewport como --zv-app-vh (px) para as
+    // seções usarem no lugar de 100vh. No mobile, 100vh = viewport grande (barra
+    // escondida); usar innerHeight evita as faixas/saltos nas transições quando a
+    // barra de endereço aparece/some.
+    const h = window.innerHeight;
+    if (h) document.documentElement.style.setProperty("--zv-app-vh", h + "px");
+  }
+
+  _applyGlobeCenterLayout() {
+    // PROBLEMA 4: no MOBILE (estados 0 e 3) distribui verticalmente — título no
+    // topo, subtítulo na base — deixando o globo sozinho no meio. No desktop (e
+    // nos estados laterais) mantém o bloco centralizado como antes.
+    const c = document.getElementById("zv-globe-center");
+    if (!c) return;
+    const p = this.props;
+    const mobile = window.innerWidth <= (p.mobileBreakpoint ?? 768);
+    if (mobile) {
+      const padX = (p.globeTextPaddingXMobile ?? 24);
+      const topPad = Math.max(0, p.globeTitleOffsetYMobile ?? 56);
+      const botPad = Math.max(0, p.globeSubtitleOffsetYMobile ?? 56);
+      c.style.top = "0"; c.style.left = "0"; c.style.right = "0"; c.style.bottom = "auto";
+      c.style.transform = "none";
+      c.style.height = (window.innerHeight || 0) + "px";
+      c.style.maxWidth = "none";
+      c.style.display = "flex"; c.style.flexDirection = "column";
+      c.style.justifyContent = "space-between"; c.style.alignItems = "center";
+      c.style.paddingTop = topPad + "px"; c.style.paddingBottom = botPad + "px";
+      c.style.paddingLeft = padX + "px"; c.style.paddingRight = padX + "px";
+    } else {
+      c.style.top = "50%"; c.style.left = "50%"; c.style.right = "auto"; c.style.bottom = "auto";
+      c.style.transform = "translate(-50%, -50%)";
+      c.style.height = ""; c.style.maxWidth = "900px";
+      c.style.display = ""; c.style.flexDirection = ""; c.style.justifyContent = ""; c.style.alignItems = "";
+      c.style.paddingTop = ""; c.style.paddingBottom = "";
+      c.style.paddingLeft = "24px"; c.style.paddingRight = "24px";
+    }
+  }
+
+  _applyGlobeSectionHeight() {
+    const p = this.props;
+    const sec = document.getElementById("globo");
+    const stage = document.getElementById("zv-globe-stage");
+    if (!sec || !stage) return;
+    const vhPct = p.sectionHeight ?? 100;
+    // PROBLEMA 5: dimensiona pela altura REAL da viewport (innerHeight), não por
+    // 100vh, para casar com a matemática de scroll e não deixar faixas no mobile.
+    const base = window.innerHeight || 0;
+    const stageH = base ? Math.round(base * vhPct / 100) : 0;
+    stage.style.height = stageH ? (stageH + "px") : (vhPct + "vh");
+    const mobile = window.innerWidth <= (p.mobileBreakpoint ?? 768);
+    const bottom = Math.max(0, mobile ? (p.globeBottomSpacingMobile ?? 0) : (p.globeBottomSpacing ?? 0));
+    const total = stageH ? ((stageH + bottom) + "px") : ("calc(" + vhPct + "vh + " + bottom + "px)");
+    sec.style.minHeight = total;
+    sec.style.height = total;
+  }
+
+  _applyGlobeTextLayout() {
+    const p = this.props;
+    const mobile = window.innerWidth <= (p.mobileBreakpoint ?? 768);
+    const left = document.getElementById("zv-globe-side-left");
+    const right = document.getElementById("zv-globe-side-right");
+    const clearChildren = (el) => { if (!el) return; Array.from(el.children).forEach((c) => { c.style.width = ""; c.style.height = ""; }); };
+    clearChildren(left); clearChildren(right);
+    const padX = p.globeTextPaddingXMobile ?? 24;
+    const maxWm = Math.min(p.globeTextMaxWidthMobile ?? 340, window.innerWidth - padX * 2);
+    if (left) {
+      left.style.width = ""; left.style.height = ""; left.style.top = "50%"; left.style.textAlign = "left"; left.style.right = "auto";
+      left.style.left = mobile ? (padX + "px") : "clamp(24px, 7vw, 110px)";
+      left.style.maxWidth = mobile ? (maxWm + "px") : "min(42%, 460px)";
+    }
+    if (right) {
+      right.style.width = ""; right.style.height = ""; right.style.top = "50%"; right.style.textAlign = "right"; right.style.left = "auto";
+      right.style.right = mobile ? (padX + "px") : "clamp(24px, 7vw, 110px)";
+      right.style.maxWidth = mobile ? (maxWm + "px") : "min(42%, 460px)";
+    }
+  }
+
+  _applyGlobeTypography() {
+    const p = this.props;
+    const mobile = window.innerWidth <= (p.mobileBreakpoint ?? 768);
+    const titleLS = mobile ? (p.globeTitleLetterSpacingMobile ?? p.globeTitleLetterSpacing ?? 0) : (p.globeTitleLetterSpacing ?? 0);
+    const titleLH = mobile ? (p.globeTitleLineHeightMobile ?? p.globeTitleLineHeight ?? 1.08) : (p.globeTitleLineHeight ?? 1.08);
+    const subLS = mobile ? (p.globeSubtitleLetterSpacingMobile ?? p.globeSubtitleLetterSpacing ?? 0) : (p.globeSubtitleLetterSpacing ?? 0);
+    const subLH = mobile ? (p.globeSubtitleLineHeightMobile ?? p.globeSubtitleLineHeight ?? 1.6) : (p.globeSubtitleLineHeight ?? 1.6);
+    const gap = mobile ? (p.globeTitleSubtitleGapMobile ?? p.globeTitleSubtitleGap ?? 16) : (p.globeTitleSubtitleGap ?? 16);
+    ["zv-globe-h", "zv-globe-left-title", "zv-globe-right-title"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) { el.style.letterSpacing = titleLS + "em"; el.style.lineHeight = titleLH; }
+    });
+    ["zv-globe-sub", "zv-globe-left-sub", "zv-globe-right-sub"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) { el.style.letterSpacing = subLS + "em"; el.style.lineHeight = subLH; el.style.marginTop = gap + "px"; }
+    });
+  }
+
+  _applyGlobeTweaks() {
+    const p = this.props;
+    this._applyGlobeTextLayout();
+    this._applyGlobeTypography();
+    this._setLeaf("zv-globe-h", p.globeHeadlineText ?? "Crescimento que rompe barreiras");
+    this._setLeaf("zv-globe-sub", p.globeSubtitleText ?? "Maiores alcances até para as maiores distâncias");
+    const h = document.getElementById("zv-globe-h");
+    if (h) h.style.color = p.globeHeadlineColor ?? "#7268A4";
+    const sub = document.getElementById("zv-globe-sub");
+    if (sub) sub.style.color = p.globeSubtitleColor ?? "#FF4A17";
+    this._applyGlobeSectionHeight();
+    const stripe = document.getElementById("zv-globe-stripe");
+    if (stripe) {
+      const op = p.globeStripeOpacity ?? 0.9;
+      const feather = Math.round((1 - (p.globeStripeFeather ?? 0.5)) * 45);
+      stripe.style.height = (p.globeStripeHeight ?? 260) + "px";
+      stripe.style.background = "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0," + op + ") " + (50 - feather) + "%, rgba(0,0,0," + op + ") " + (50 + feather) + "%, rgba(0,0,0,0) 100%)";
+    }
+    if (this._globe) {
+      this._globe.gridMat.color.set(p.globeGridLineColor ?? "#ffffff");
+      this._globe.gridMat.opacity = p.globeGridLineOpacity ?? 0.4;
+      if (this._globe.fillMat) this._globe.fillMat.color.set(p.globeFillColor ?? "#000000");
+      this._drawContinents(p.globeContinentColor ?? "#4a4a4a");
+      if (this._globeResize) this._globeResize();
+    }
+    // Textos dos estados internos (título roxo, subtítulo branco c/ destaque laranja)
+    const hlSub = (id, sub, word) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (word && sub.indexOf(word) >= 0) {
+        const i = sub.indexOf(word);
+        el.textContent = "";
+        el.appendChild(document.createTextNode(sub.slice(0, i)));
+        const span = document.createElement("span");
+        span.style.color = "#FF5A2E";
+        span.textContent = word;
+        el.appendChild(span);
+        el.appendChild(document.createTextNode(sub.slice(i + word.length)));
+      } else {
+        el.textContent = sub;
+      }
+    };
+    this._setLeaf("zv-globe-left-title", p.globeState1Title ?? "Fundada em Santa Maria");
+    hlSub("zv-globe-left-sub", p.globeState1Subtitle ?? "Nossa história começou no Rio Grande do Sul, apoiávamos apenas negócios locais", p.globeState1Highlight ?? "Rio Grande do Sul");
+    this._setLeaf("zv-globe-right-title", p.globeState2Title ?? "Hoje entregamos ao redor do mundo inteiro");
+    hlSub("zv-globe-right-sub", p.globeState2Subtitle ?? "Alcance e desenvolvimento que destrói barreiras e fronteiras. De onde você estiver, a Zanvie está com você", p.globeState2Highlight ?? "barreiras e fronteiras");
+    this._updateGlobePin();
+    if (this._renderGlobeState) this._renderGlobeState(this._globeState || 0);
+  }
+
+  _applyFaqTweaks() {
+    const p = this.props;
+    this._setLeaf("zv-faq-title", p.faqTitleText ?? "Perguntas frequentes");
+    this._setLeaf("zv-faq-sub", p.faqSubtitleText ?? "Tudo que você precisa saber antes de começar.");
+    const faq = document.getElementById("faq");
+    if (faq) {
+      const full = p.faqSectionFullBleed !== false;
+      faq.style.borderRadius = full ? "0" : "40px 40px 0 0";
+      faq.style.boxShadow = full ? "none" : "0 -20px 44px rgba(10,10,11,0.08)";
+    }
+    const fade = document.getElementById("zv-faq-fade");
+    if (fade) fade.style.height = (p.transitionGradientHeight ?? 180) + "px";
+    const head = document.getElementById("zv-faq-head");
+    const stripeOn = p.faqTitleStripeEnabled !== false;
+    if (head) {
+      const center = (p.faqTitleAlignment ?? "center") === "center";
+      head.style.alignItems = center ? "center" : "flex-start";
+      head.style.textAlign = center ? "center" : "left";
+      if (stripeOn) {
+        head.style.background = p.faqTitleStripeColor ?? "#000000";
+        head.style.padding = (p.faqTitleStripeHeight ?? 56) + "px clamp(24px, 5vw, 64px)";
+        head.style.maxWidth = "none";
+        head.style.boxSizing = "border-box";
+        if (p.faqTitleStripeFullWidth === true) {
+          const dw = document.documentElement.clientWidth; // exclui a barra de rolagem (100vw não exclui)
+          head.style.width = dw + "px";
+          head.style.marginLeft = "calc(50% - " + (dw / 2) + "px)";
+          head.style.marginRight = "0";
+        } else {
+          head.style.width = "100%";
+          head.style.marginLeft = center ? "auto" : "0";
+          head.style.marginRight = center ? "auto" : "0";
+        }
+      } else {
+        head.style.background = "transparent";
+        head.style.padding = "0";
+        head.style.maxWidth = "640px";
+        head.style.width = "auto";
+        head.style.margin = center ? "0 auto" : "0";
+      }
+    }
+    const ft = document.getElementById("zv-faq-title");
+    if (ft) ft.style.color = p.faqTitleTextColor ?? (stripeOn ? "#ffffff" : (p.faqTitleColor ?? "#0a0a0b"));
+    const fs = document.getElementById("zv-faq-sub");
+    if (fs) fs.style.color = p.faqSubtitleTextColor ?? (stripeOn ? "#d4d4d8" : (p.faqSubtitleColor ?? "#52525b"));
+    // ---- Cards expansíveis (accordion) ----
+    const cards = document.getElementById("zv-faq-cards");
+    if (cards) {
+      cards.style.maxWidth = (p.faqCardMaxWidth ?? 760) + "px";
+      cards.style.gap = (p.faqCardSpacing ?? 8) + "px";
+    }
+    const dur = (p.faqCardAnimationDuration ?? 320) + "ms";
+    document.querySelectorAll(".zv-faq-card-btn").forEach(b => { b.style.padding = (p.faqCardPadding ?? 22) + "px 8px"; });
+    document.querySelectorAll(".zv-faq-card-q").forEach(q => { q.style.color = p.faqCardQuestionColor ?? "#544993"; q.style.fontSize = (p.faqCardQuestionSize ?? 1.125) + "rem"; });
+    document.querySelectorAll(".zv-faq-card-a").forEach(a => { a.style.color = p.faqCardAnswerColor ?? "#FF5A2E"; a.style.fontSize = (p.faqCardAnswerSize ?? 1) + "rem"; a.style.paddingBottom = (p.faqCardPadding ?? 22) + "px"; });
+    document.querySelectorAll(".zv-faq-card-item").forEach(d => { d.style.borderBottomColor = p.faqCardDividerColor ?? "#e4e4e7"; });
+    document.querySelectorAll(".zv-faq-card-chev").forEach(c => { c.style.color = p.faqCardIconColor ?? "#0a0a0b"; c.style.transitionDuration = dur; });
+    document.querySelectorAll(".zv-faq-card-panel").forEach(pn => { pn.style.transitionDuration = dur; });
+  }
+
+  _setLeaf(id, text) {
+    if (text == null) return;
+    const r = document.getElementById(id);
+    if (!r) return;
+    let el = r, g = 0;
+    while (el.children && el.children.length === 1 && g++ < 8) el = el.children[0];
+    el.textContent = text;
+  }
+
+  _applyGlobalTweaks() {
+    const p = this.props, root = document.documentElement;
+    root.style.setProperty("--purple-500", p.brandPurple ?? "#7c5cfc");
+    root.style.setProperty("--purple-600", p.brandPurpleTitles ?? "#7268A4");
+    root.style.setProperty("--orange-500", p.brandOrange ?? "#FF4A17");
+  }
+
+  _hexToRgba(hex, a) {
+    let h = String(hex || "#000000").replace("#", "");
+    if (h.length === 3) h = h.split("").map(x => x + x).join("");
+    const r = parseInt(h.slice(0,2),16) || 0, g = parseInt(h.slice(2,4),16) || 0, b = parseInt(h.slice(4,6),16) || 0;
+    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+  }
+
+  _applyHeaderTweaks() {
+    const p = this.props;
+    const bar = document.getElementById("zv-navbar");
+    if (bar) {
+      const gOp = p.navGlassOpacity ?? 0.5, gBlur = p.navGlassBlur ?? 20, gSat = p.navGlassSaturate ?? 150, gBord = p.navGlassBorderOpacity ?? 0.08;
+      bar.style.background = this._hexToRgba(p.headerBackgroundColor ?? "#000000", gOp);
+      const nf = "blur(" + gBlur + "px) saturate(" + gSat + "%)";
+      bar.style.backdropFilter = nf;
+      bar.style.webkitBackdropFilter = nf;
+      bar.style.borderBottom = "1px solid rgba(255,255,255," + gBord + ")";
+      bar.style.boxShadow = "0 8px 32px rgba(0,0,0,0.2)";
+    }
+    const logo = document.getElementById("zv-logo-img");
+    if (logo) {
+      const c = (p.logoTextColor ?? "#ffffff").replace("#", "");
+      const hex = c.length === 3 ? c.split("").map(x => x + x).join("") : c;
+      const r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
+      const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+      logo.src = lum > 0.5 ? "assets/logo-zanvie-white.png" : "assets/logo-zanvie-dark.png";
+    }
+    const pillNav = document.getElementById("zv-navpill");
+    if (pillNav) {
+      const pOp = p.navPillGlassOpacity ?? 0.5, pBlur = p.navPillGlassBlur ?? 20, pBord = p.navPillGlassBorderOpacity ?? 0.08;
+      pillNav.style.background = "rgba(0,0,0," + pOp + ")";
+      const pf = "blur(" + pBlur + "px) saturate(150%)";
+      pillNav.style.backdropFilter = pf;
+      pillNav.style.webkitBackdropFilter = pf;
+      pillNav.style.border = "1px solid rgba(255,255,255," + pBord + ")";
+      pillNav.style.boxShadow = "0 8px 32px rgba(0,0,0,0.2)";
+    }
+    const px = p.navPillPaddingX ?? 16, py = p.navPillPaddingY ?? 7, fs = p.navItemFontSize ?? 13.6;
+    ["zv-pill-1","zv-pill-2","zv-pill-3"].forEach((id) => {
+      const it = document.getElementById(id);
+      if (it) { it.style.padding = py + "px " + px + "px"; it.style.fontSize = fs + "px"; it.style.whiteSpace = "nowrap"; }
+    });
+    this._setLeaf("zv-pill-1", p.headerItem1Text ?? "Início");
+    this._setLeaf("zv-pill-2", p.headerItem2Text ?? "Serviços");
+    this._setLeaf("zv-pill-3", p.headerItem3Text ?? "Entre em contato");
+    this._setLeaf("zv-wa-full", p.headerCtaText ?? "Falar no WhatsApp");
+    const cta = document.getElementById("zv-navbar-cta");
+    if (cta) {
+      const btn = cta.querySelector("button") || cta.firstElementChild;
+      if (btn) {
+        btn.style.setProperty("background", p.headerCtaBg ?? "#ff5a2e", "important");
+        btn.style.setProperty("color", p.headerCtaTextColor ?? "#ffffff", "important");
+      }
+    }
+    this._applyResponsiveHeader();
+  }
+
+  // Layout compacto do cabeçalho abaixo do mobileBreakpoint: logo à esquerda (colado),
+  // botão do WhatsApp circular à direita, e pill central ajustado ao vão entre os dois — sem sobreposição.
+  _applyResponsiveHeader() {
+    const p = this.props;
+    const bp = p.mobileBreakpoint ?? 768;
+    const compact = window.innerWidth <= bp;
+    const bar = document.getElementById("zv-navbar");
+    const inner = bar ? bar.firstElementChild : null;
+    const logo = document.getElementById("zv-logo-img");
+    const full = document.getElementById("zv-wa-full");
+    const circle = document.getElementById("zv-wa-circle");
+    const pill = document.getElementById("zv-navpill");
+    // variante de cor do logo, coerente com _applyHeaderTweaks
+    const lc = (p.logoTextColor ?? "#ffffff").replace("#", "");
+    const hex = lc.length === 3 ? lc.split("").map(x => x + x).join("") : lc;
+    const lum = (0.299 * parseInt(hex.slice(0,2),16) + 0.587 * parseInt(hex.slice(2,4),16) + 0.114 * parseInt(hex.slice(4,6),16)) / 255;
+    const tone = lum > 0.5 ? "white" : "dark";
+
+    if (!compact) {
+      if (inner) inner.style.padding = "0 32px";
+      if (logo) { logo.src = "assets/logo-zanvie-" + tone + ".png"; logo.style.height = "169px"; logo.style.width = "172px"; }
+      if (full) full.style.display = "inline-flex";
+      if (circle) circle.style.display = "none";
+      if (pill) {
+        pill.style.left = "50%"; pill.style.right = "auto";
+        pill.style.transform = "translateX(-50%)";
+        pill.style.maxWidth = "calc(100vw - 20px)";
+        pill.style.overflowX = "visible";
+        pill.style.padding = "4px"; pill.style.gap = "4px";
+        pill.style.height = "";
+        pill.style.top = "14px";
+      }
+      const px = p.navPillPaddingX ?? 16, py = p.navPillPaddingY ?? 7, fs = p.navItemFontSize ?? 13.6;
+      ["zv-pill-1","zv-pill-2","zv-pill-3"].forEach((id) => {
+        const it = document.getElementById(id);
+        if (it) { it.style.padding = py + "px " + px + "px"; it.style.fontSize = fs + "px"; }
+      });
+      this._styleNavItems();
+      return;
+    }
+
+    // ---- compacto ----
+    const scale = p.mobileLogoScale ?? 1;
+    const showTag = p.mobileShowTagline === true;
+    const circular = p.whatsappButtonCircular !== false;
+    const circleSize = p.whatsappCircleSize ?? 46;
+    const ctaBg = p.headerCtaBg ?? "#ff5a2e";
+    const ctaColor = p.headerCtaTextColor ?? "#ffffff";
+    const pad = 12;
+    if (inner) inner.style.padding = "0 " + pad + "px";
+
+    const variant = showTag ? "tight" : "notag";
+    const aspect = showTag ? (407 / 108) : (395 / 85);
+    const baseH = showTag ? 30 : 26;
+    const logoH = Math.round(baseH * scale);
+    if (logo) { logo.src = "assets/logo-zanvie-" + tone + "-" + variant + ".png"; logo.style.height = logoH + "px"; logo.style.width = "auto"; }
+    const logoW = logoH * aspect;
+
+    let btnW;
+    if (circular) {
+      if (full) full.style.display = "none";
+      if (circle) {
+        circle.style.display = "flex";
+        circle.style.width = circleSize + "px";
+        circle.style.height = circleSize + "px";
+        circle.style.background = ctaBg;
+        circle.style.color = ctaColor;
+      }
+      btnW = circleSize;
+    } else {
+      if (full) full.style.display = "inline-flex";
+      if (circle) circle.style.display = "none";
+      const btnEl = full ? full.querySelector("button") : null;
+      btnW = btnEl ? btnEl.offsetWidth : 150;
+    }
+
+    if (pill) {
+      const padX = p.navPillPaddingXMobile ?? 3, padY = p.navPillPaddingYMobile ?? 3;
+      pill.style.paddingLeft = padX + "px"; pill.style.paddingRight = padX + "px";
+      pill.style.paddingTop = padY + "px"; pill.style.paddingBottom = padY + "px";
+      pill.style.gap = (p.navPillItemGapMobile ?? 2) + "px";
+      pill.style.overflowX = "auto"; pill.style.scrollbarWidth = "none";
+      // Altura do pill compatível com logo e botão, centrado na linha do header
+      const pillH = p.navPillHeightMobile ?? 44;
+      const barH = inner ? inner.offsetHeight : 72;
+      pill.style.height = pillH + "px";
+      pill.style.alignItems = "center";
+      pill.style.boxSizing = "border-box";
+      pill.style.top = Math.round((barH - pillH) / 2 + (p.navMobileAlignment ?? 0)) + "px";
+      pill.style.borderRadius = (p.navPillBorderRadiusMobile ?? 999) + "px";
+      const bgOp = p.navPillBackgroundOpacityMobile ?? p.navPillGlassOpacity ?? 0.5;
+      pill.style.background = "rgba(0,0,0," + bgOp + ")";
+      const blurAmt = p.navPillBlurMobile ?? p.navPillGlassBlur ?? 20;
+      const pf = "blur(" + blurAmt + "px) saturate(150%)";
+      pill.style.backdropFilter = pf; pill.style.setProperty("-webkit-backdrop-filter", pf);
+      const bc = (p.navPillBorderColorMobile ?? "#ffffff").replace("#", "");
+      const bcFull = bc.length === 3 ? bc.split("").map(x => x + x).join("") : bc;
+      const bo = p.navPillBorderOpacityMobile ?? (p.navPillGlassBorderOpacity ?? 0.08);
+      pill.style.border = "1px solid rgba(" + parseInt(bcFull.slice(0,2),16) + "," + parseInt(bcFull.slice(2,4),16) + "," + parseInt(bcFull.slice(4,6),16) + "," + bo + ")";
+      ["zv-pill-1","zv-pill-2","zv-pill-3"].forEach((id) => {
+        const it = document.getElementById(id);
+        if (it) { it.style.padding = "6px 9px"; it.style.fontSize = (p.navItemFontSizeMobile ?? 11) + "px"; }
+      });
+      const vw = window.innerWidth;
+      const m = 8;
+      // Pill sempre centralizado na viewport; largura limitada ao lado mais estreito
+      // (entre logo e botão) para nunca sobrepor nenhum dos dois — salvo largura fixa via tweak.
+      const centerX = vw / 2;
+      const leftHalf = centerX - (pad + logoW + m);
+      const rightHalf = (vw - pad - btnW - m) - centerX;
+      const halfW = Math.max(40, Math.min(leftHalf, rightHalf));
+      const widthOverride = p.navPillWidthMobile ?? 0;
+      pill.style.left = "50%";
+      pill.style.right = "auto";
+      const hOff = p.navPillHorizontalOffsetMobile ?? 0;
+      pill.style.transform = "translateX(calc(-50% + " + hOff + "px))";
+      pill.style.maxWidth = (widthOverride > 0 ? widthOverride : halfW * 2) + "px";
+    }
+    this._styleNavItems();
+  }
+
+  // Indicador ativo preenchendo a altura total do container do pill (desktop + mobile)
+  _styleNavItems() {
+    const p = this.props;
+    const nav = document.getElementById("zv-navpill");
+    if (!nav) return;
+    const compact = window.innerWidth <= (p.mobileBreakpoint ?? 768);
+    const cs = getComputedStyle(nav);
+    const innerH = nav.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0);
+    const hPct = (compact ? (p.navActiveIndicatorHeightMobile ?? p.navActiveIndicatorHeight) : p.navActiveIndicatorHeight) ?? 100;
+    const itemH = Math.max(0, innerH * (hPct / 100));
+    const px = compact
+      ? (p.navActiveIndicatorPaddingXMobile ?? p.navActiveIndicatorPaddingX ?? p.navPillPaddingX ?? 16)
+      : (p.navActiveIndicatorPaddingX ?? (p.navPillPaddingX ?? 16));
+    const rad = compact
+      ? (p.navActiveIndicatorRadiusMobile ?? p.navActiveIndicatorRadius ?? (parseFloat(cs.borderRadius) || 999))
+      : (p.navActiveIndicatorRadius ?? (parseFloat(cs.borderRadius) || 999));
+    const raw = this.state.activeSection;
+    const menu = raw === "estrategia" ? "inicio" : raw;
+    const map = { "zv-pill-1": "inicio", "zv-pill-2": "servicos", "zv-pill-3": "contato" };
+    ["zv-pill-1", "zv-pill-2", "zv-pill-3"].forEach((id) => {
+      const it = document.getElementById(id);
+      if (!it) return;
+      it.style.display = "flex";
+      it.style.alignItems = "center";
+      it.style.justifyContent = "center";
+      it.style.height = itemH + "px";
+      it.style.paddingTop = "0"; it.style.paddingBottom = "0";
+      it.style.paddingLeft = px + "px"; it.style.paddingRight = px + "px";
+      it.style.borderRadius = rad + "px";
+      if (compact) {
+        const isActive = map[id] === menu;
+        if (isActive && p.navActiveIndicatorColorMobile) it.style.background = p.navActiveIndicatorColorMobile;
+        const txtColor = isActive ? p.navActiveItemTextColorMobile : p.navItemTextColorMobile;
+        if (txtColor) it.style.color = txtColor;
+        if (p.navItemFontWeightMobile != null) it.style.fontWeight = p.navItemFontWeightMobile;
+        if (p.navItemLetterSpacingMobile != null) it.style.letterSpacing = p.navItemLetterSpacingMobile + "em";
+      }
+    });
+    nav.style.alignItems = "center";
+  }
+
+  _applyServicosTweaks() {
+    const p = this.props;
+    this._setLeaf("zv-serv-title", p.servTitleText ?? "O que fazemos");
+    this._setLeaf("zv-serv-sub", p.servSubtitleText ?? "Serviços 100% personalizados para o porte, o nicho e a identidade do seu negócio.");
+    this._setLeaf("zv-c1-title", p.servCard1Title);
+    this._setLeaf("zv-c1-desc", p.servCard1Desc);
+    this._setLeaf("zv-c1-hl", p.servCard1Highlight);
+    this._setLeaf("zv-c2-title", p.servCard2Title);
+    this._setLeaf("zv-c2-desc", p.servCard2Desc);
+    this._setLeaf("zv-c2-hl", p.servCard2Highlight);
+    this._setLeaf("zv-c3-title", p.servCard3Title);
+    this._setLeaf("zv-c3-desc", p.servCard3Desc);
+    this._setLeaf("zv-c3-hl", p.servCard3Highlight);
+    const sec = document.getElementById("servicos");
+    if (sec) {
+      // Fundo único e estável (backdrop-filter causava troca de tonalidade pós-carregamento
+      // e artefato de linha vertical em mobile)
+      sec.style.background = p.servSectionBackground ?? "#f4f4f6";
+      sec.style.backdropFilter = "none";
+      sec.style.webkitBackdropFilter = "none";
+    }
+    const track = document.getElementById("zv-carousel-track");
+    if (track) {
+      const co = p.servCardOpacity ?? 0.55, cb = p.servCardBlur ?? 16, cbo = p.servCardBorderOpacity ?? 0.75;
+      track.style.background = "rgba(236,236,241," + co + ")";
+      const f = "blur(" + cb + "px) saturate(1.35)";
+      track.style.backdropFilter = f; track.style.webkitBackdropFilter = f;
+      track.style.borderColor = "rgba(255,255,255," + cbo + ")";
+    }
+    this._applyCarousel();
+  }
+
+  _applyCarousel() {
+    const p = this.props, n = 3;
+    const idx = (((this.state.servIndex ?? 0) % n) + n) % n;
+    const dir = this.state.servDir ?? 1;
+    const dur = p.carouselTransitionDuration ?? 0.5;
+    const loop = p.carouselLoop !== false;
+    const ease = "cubic-bezier(0.4,0,0.2,1)";
+    const track = document.getElementById("zv-carousel-track");
+    const slides = [0,1,2].map((i) => document.getElementById("zv-slide-" + i));
+    const setBase = (s, i) => {
+      s.style.pointerEvents = i === idx ? "auto" : "none";
+      s.setAttribute("aria-hidden", i === idx ? "false" : "true");
+    };
+    if (this._lastIdx === undefined) {
+      slides.forEach((s, i) => { if (!s) return; s.style.transition = "none"; s.style.opacity = i === idx ? "1" : "0"; s.style.transform = i === idx ? "translateX(0)" : "translateX(100%)"; setBase(s, i); });
+      this._lastIdx = idx;
+    } else if (this._lastIdx !== idx) {
+      const leaving = this._lastIdx;
+      slides.forEach((s, i) => {
+        if (!s) return;
+        s.style.transition = "none";
+        s.style.opacity = (i === idx || i === leaving) ? "1" : "0";
+        setBase(s, i);
+        s.style.transform = i === leaving ? "translateX(0)" : "translateX(" + (dir * 100) + "%)";
+      });
+      if (track) void track.offsetHeight;
+      slides.forEach((s, i) => {
+        if (!s) return;
+        if (i === idx) { s.style.transition = "transform " + dur + "s " + ease; s.style.transform = "translateX(0)"; }
+        else if (i === leaving) { s.style.transition = "transform " + dur + "s " + ease; s.style.transform = "translateX(" + (-dir * 100) + "%)"; }
+      });
+      this._lastIdx = idx;
+    }
+    if (track) track.style.height = (p.carouselBlockHeight ?? 360) + "px";
+    const aColor = p.carouselArrowColor ?? "#0a0a0b", aSize = p.carouselArrowSize ?? 24;
+    const setArrow = (id, svgId, disabled) => {
+      const b = document.getElementById(id);
+      if (b) {
+        b.style.color = aColor;
+        b.disabled = disabled;
+        b.style.opacity = disabled ? "0.3" : "1";
+        b.style.pointerEvents = disabled ? "none" : "auto";
+        b.style.cursor = disabled ? "default" : "pointer";
+      }
+      const svg = document.getElementById(svgId);
+      if (svg) { svg.setAttribute("width", aSize); svg.setAttribute("height", aSize); }
+    };
+    setArrow("zv-carousel-prev", "zv-arrow-prev", !loop && idx <= 0);
+    setArrow("zv-carousel-next", "zv-arrow-next", !loop && idx >= n - 1);
+    const dA = p.carouselDotActiveColor ?? "#7B6FE0", dI = p.carouselDotInactiveColor ?? "rgba(10,10,11,0.2)", dS = p.carouselDotSize ?? 10;
+    for (let i = 0; i < n; i++) {
+      const d = document.getElementById("zv-dot-" + i);
+      if (!d) continue;
+      const on = i === idx;
+      d.style.width = dS + "px"; d.style.height = dS + "px";
+      d.style.background = on ? dA : dI;
+      d.style.transform = on ? "scale(1.15)" : "scale(1)";
+      d.setAttribute("aria-current", on ? "true" : "false");
+    }
+  }
+
+  _applyEstrategiaTweaks() {
+    const p = this.props;
+    const sec = document.getElementById("estrategia");
+    if (sec) {
+      sec.style.background = p.sectionBackgroundColor ?? "#000000";
+      sec.style.backdropFilter = "none";
+      sec.style.webkitBackdropFilter = "none";
+    }
+    this._setLeaf("zv-tl-eyebrow", p.timelineEyebrow ?? "COMO FAZEMOS ACONTECER");
+    this._setLeaf("zv-tl-head", p.timelineHeadline ?? "Da estratégia à conversão real.");
+    this._setLeaf("zv-tl-sub", p.timelineSubtitle ?? "Cada campanha passa por um processo claro, do conteúdo ao resultado — sem achismo em nenhuma etapa.");
+    const steps = [
+      ["Criativos para Instagram", "Pacotes de posts e artes pensados para o feed do seu perfil, com identidade visual própria."],
+      ["Stories", "Conteúdo dinâmico para manter presença diária e proximidade com o seu público."],
+      ["Seguidores e engajamento", "Estratégias para crescer sua audiência com pessoas reais, interessadas no seu negócio."],
+      ["Landing pages", "Páginas construídas para converter visitante em cliente, alinhadas a cada campanha."],
+      ["Tráfego pago", "Campanhas em Meta Ads e Google Ads levando as pessoas certas até você."],
+    ];
+    for (let i = 1; i <= 5; i++) {
+      this._setLeaf("zv-tl-" + i + "-title", p["timelineStep" + i + "Title"] ?? steps[i - 1][0]);
+      this._setLeaf("zv-tl-" + i + "-desc", p["timelineStep" + i + "Desc"] ?? steps[i - 1][1]);
+    }
+    const gStart = p.timelineIconGradientStart ?? "#7B6FE0";
+    const gEnd = p.timelineIconGradientEnd ?? "#FF5A2E";
+    const solid = p.timelineIconColor ?? "#7B6FE0";
+    document.querySelectorAll(".zv-tl-circle").forEach((c) => {
+      c.style.background = solid ? solid : "linear-gradient(135deg, " + gStart + ", " + gEnd + ")";
+    });
+    const badge = p.timelineNumberBadgeColor ?? "#ffffff";
+    const badgeText = (badge.toLowerCase() === "#ffffff" || badge.toLowerCase() === "#fff") ? "#2a1f66" : "#ffffff";
+    document.querySelectorAll(".zv-tl-badge").forEach((b) => { b.style.background = badge; b.style.color = badgeText; });
+    const line = document.getElementById("zv-timeline-line");
+    if (line) line.style.background = p.timelineLineColor ?? "rgba(255,255,255,0.16)";
+    this._layoutTimeline();
+    if (!this._tlResizeBound) {
+      this._tlResize = () => this._layoutTimeline();
+      window.addEventListener("resize", this._tlResize);
+      this._tlResizeBound = true;
+    }
+  }
+
+  _servZone() {
+    if (this._servAnimating) return null;
+    const serv = document.getElementById("servicos");
+    if (!serv) return null;
+    const vh = window.innerHeight;
+    const coverY = Math.round(serv.getBoundingClientRect().top + window.scrollY);
+    const pinY = coverY - vh;              // rodapé preto da timeline alinhado à base (Servicos logo abaixo)
+    const gap = this.props.timelineFreeScrollGap ?? 0;
+    const triggerY = pinY + gap;           // gatilho de avanço, após o trecho de scroll livre
+    return { coverY, pinY, triggerY, vh };
+  }
+
+  // Reconcilia o flag de cobertura com a posição real (scroll nativo / overshoot).
+  _reconcileServ() {
+    if (this._servAnimating) return;
+    const z = this._servZone();
+    if (!z) return;
+    const y = window.scrollY;
+    if (y >= z.coverY - 2) this._servCovered = true;
+    else if (y <= z.pinY + 2) this._servCovered = false;
+  }
+
+  // Transição sobreposta bidirecional entre a Timeline (estática) e "O que fazemos".
+  // dir > 0 (rolar p/ baixo) no fim do scroll livre => Servicos SOBE cobrindo.
+  // dir < 0 (rolar p/ cima) com Servicos coberto     => Servicos DESCE revelando a Timeline.
+  _servTransition(dir) {
+    if (this._servAnimating) return true;
+    const z = this._servZone();
+    if (!z) return false;
+    const y = window.scrollY;
+    if (!this._servCovered && dir > 0 && y >= z.triggerY - 2 && y < z.coverY - 2) { this._animServ(false, z); return true; }
+    if (this._servCovered && dir < 0 && y <= z.coverY + 2 && y > z.pinY + 2) { this._animServ(true, z); return true; }
+    return false;
+  }
+
+  _animServ(reverse, z) {
+    const serv = document.getElementById("servicos");
+    if (!serv) return;
+    this._servAnimating = true;
+    this._snapAnimating = true;
+    // Reposicionamentos por scrollTo abaixo devem ser instantâneos. No sentido
+    // reverso o salto é de uma viewport inteira; sob scroll-behavior:smooth ele
+    // viraria um scroll suave do browser competindo com a transição de transform
+    // — era isso que deixava a reversa menos fluida que o avanço.
+    document.documentElement.style.scrollBehavior = "auto";
+    // Spacer preserva o fluxo/altura do documento enquanto Servicos vira camada fixa
+    // (sem ele, o FAQ e seu degradê branco sobem por trás durante a animação).
+    let spacer = document.getElementById("zv-serv-spacer");
+    if (!spacer) {
+      spacer = document.createElement("div");
+      spacer.id = "zv-serv-spacer";
+      spacer.setAttribute("aria-hidden", "true");
+      serv.parentNode.insertBefore(spacer, serv);
+    }
+    spacer.style.height = serv.offsetHeight + "px";
+    // Fixa a página no ponto do rodapé preto: a Timeline (acima) fica estática atrás,
+    // e apenas "O que fazemos" (camada fixa) se move por translateY.
+    window.scrollTo(0, z.pinY);
+    serv.style.position = "fixed";
+    serv.style.left = "0";
+    serv.style.right = "0";
+    serv.style.top = "0";
+    serv.style.margin = "0";
+    serv.style.zIndex = "50";
+    serv.style.willChange = "transform";
+    // Cobre a viewport inteira durante o movimento (seção pode ser mais baixa que a
+    // tela em monitores altos — sem isso sobra faixa preta ao subir e borda residual
+    // ao descer, que só sumiam no reajuste pós-animação).
+    serv.style.minHeight = Math.ceil(window.innerHeight + 4) + "px";
+    // Durante o movimento: fundo sólido e sem backdrop-filter (blur em camada fixa
+    // animada é pesado e renderiza como "pedaço branco" em alguns engines).
+    serv.style.backdropFilter = "none";
+    serv.style.webkitBackdropFilter = "none";
+    serv.style.background = this.props.servSectionBackground ?? "#f4f4f6";
+    const from = reverse ? 0 : 100, to = reverse ? 100 : 0;
+    serv.style.transition = "none";
+    serv.style.transform = "translateY(" + from + "%)";
+    serv.getBoundingClientRect();
+    const dur = this.props.scrollSnapTransitionDuration ?? 750;
+    // Transição CSS (compositor) em vez de rAF na main thread — leve e fluida.
+    serv.style.transition = "transform " + dur + "ms cubic-bezier(0.22, 1, 0.36, 1)";
+    serv.style.transform = "translateY(" + to + "%)";
+    clearTimeout(this._servTimer);
+    this._servTimer = setTimeout(() => {
+      // commit: devolve Servicos ao fluxo normal e posiciona a página sem salto visível
+      serv.style.transition = "";
+      serv.style.position = "";
+      serv.style.left = ""; serv.style.right = ""; serv.style.top = "";
+      serv.style.margin = ""; serv.style.zIndex = "";
+      serv.style.transform = ""; serv.style.willChange = "";
+      serv.style.minHeight = "";
+      const sp = document.getElementById("zv-serv-spacer");
+      if (sp) sp.style.height = "0px";
+      if (reverse) { window.scrollTo(0, z.pinY); this._servCovered = false; }
+      else { window.scrollTo(0, z.coverY); this._servCovered = true; }
+      document.documentElement.style.scrollBehavior = "";
+      // restaura o glass/background da seção conforme os Tweaks
+      this._applyServicosTweaks();
+      setTimeout(() => { this._servAnimating = false; this._snapAnimating = false; this._wheelAccum = 0; }, 60);
+    }, dur + 30);
+  }
+
+  _layoutTimeline() {
+    const tl = document.getElementById("zv-timeline");
+    const line = document.getElementById("zv-timeline-line");
+    if (!tl) return;
+    // A timeline horizontal de 5 etapas fica apertada abaixo de ~1024px; empilha
+    // verticalmente já a partir de tablets (estrutura muda, não só valores).
+    const mobile = window.innerWidth < 1024;
+    const sec = document.getElementById("estrategia");
+    if (sec) sec.style.paddingBottom = (160 + (this.props.timelineBottomSpacing ?? 220) + (mobile ? (this.props.timelineMobileBottomSpacing ?? 120) : 0)) + "px";
+    tl.style.flexDirection = mobile ? "column" : "row";
+    tl.style.alignItems = mobile ? "flex-start" : "flex-start";
+    tl.style.gap = mobile ? "32px" : "24px";
+    if (line) line.style.display = mobile ? "none" : "block";
+    tl.querySelectorAll(".zv-tl-item").forEach((it) => {
+      it.style.flexDirection = mobile ? "row" : "column";
+      it.style.alignItems = mobile ? "flex-start" : "center";
+      it.style.textAlign = mobile ? "left" : "center";
+      it.style.gap = mobile ? "18px" : "18px";
+      it.style.width = mobile ? "100%" : "auto";
+      const txt = it.lastElementChild;
+      if (txt) { txt.style.maxWidth = mobile ? "none" : "220px"; txt.style.alignItems = mobile ? "flex-start" : "center"; }
+      // Zoom sutil no hover/toque (único efeito — sem borda, cor ou sombra)
+      const sc = this.props.timelineHoverScale ?? 1.04;
+      const hdur = this.props.timelineHoverDuration ?? 250;
+      it.style.transition = "transform " + hdur + "ms cubic-bezier(0.22, 1, 0.36, 1)";
+      it.onmouseenter = () => { it.style.transform = "scale(" + sc + ")"; };
+      it.onmouseleave = () => { it.style.transform = "scale(1)"; };
+      it.ontouchstart = () => { it.style.transform = "scale(" + sc + ")"; };
+      it.ontouchend = it.ontouchcancel = () => { it.style.transform = "scale(1)"; };
+    });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this._onScroll);
+    if (this._onResizeVH) window.removeEventListener("resize", this._onResizeVH);
+    window.removeEventListener("resize", this._layoutStack);
+    if (this._stackRO) this._stackRO.disconnect();
+    window.removeEventListener("wheel", this._onWheel);
+    window.removeEventListener("keydown", this._onKeySnap);
+    window.removeEventListener("touchstart", this._onTouchStart);
+    window.removeEventListener("touchmove", this._onTouchMove);
+    window.removeEventListener("touchend", this._onTouchEnd);
+    if (this._snapRAF) cancelAnimationFrame(this._snapRAF);
+    if (this._navRAF) cancelAnimationFrame(this._navRAF);
+    if (this._servRAF) cancelAnimationFrame(this._servRAF);
+    clearTimeout(this._servTimer);
+    clearTimeout(this._globeFastT);
+    clearTimeout(this._globeBlockT);
+    if (this._globeRAF) cancelAnimationFrame(this._globeRAF);
+    if (this._starRAF) cancelAnimationFrame(this._starRAF);
+    if (this._onResizeStars) window.removeEventListener("resize", this._onResizeStars);
+    if (this._globeResize) window.removeEventListener("resize", this._globeResize);
+    if (this._globeIO) this._globeIO.disconnect();
+    if (this._globe) this._globe.renderer.dispose();
+    if (this._onResizeHeader) window.removeEventListener("resize", this._onResizeHeader);
+    if (this._onResizeContact) window.removeEventListener("resize", this._onResizeContact);
+    if (this._onResizeFaq) window.removeEventListener("resize", this._onResizeFaq);
+    if (this._tlResize) window.removeEventListener("resize", this._tlResize);
+  }
+
+  _applyHeroTweaks() {
+    const p = this.props;
+    const blur = p.heroBlur ?? 4;
+    const dark = p.overlayDarkness ?? 0.55;
+    const photo = document.getElementById("zv-hero-photo");
+    const overlay = document.getElementById("zv-hero-overlay");
+    if (photo) {
+      photo.style.filter = "blur(" + blur + "px)";
+      photo.style.backgroundImage = "url('" + (p.heroBgImage ?? "assets/hero-bg-escritorio.png") + "')";
+    }
+    if (overlay) {
+      const reach = Math.round(40 + dark * 40);
+      overlay.style.background =
+        "linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) " + Math.round(reach * 0.45) + "%, rgba(255,255,255,0.4) " + Math.round(reach * 0.77) + "%, rgba(255,255,255,0) " + reach + "%)";
+    }
+    this._setLeaf("zv-hero-eyebrow", p.heroEyebrowText ?? "Publicidade e Tráfego Pago");
+    this._setLeaf("zv-hero-sub", p.heroSubtitleText ?? "Tráfego pago, sites e conteúdos trabalhando juntos pelo seu resultado.");
+    this._setLeaf("zv-hero-cta", p.heroCtaText ?? "Quero uma proposta");
+    const hl1 = document.getElementById("zv-hero-hl1");
+    const accent = p.heroHeadlineAccentColor ?? p.heroHl1Color ?? "#7268A4";
+    if (hl1) hl1.style.color = accent;
+    const hl1Dot = document.getElementById("zv-hero-hl1-dot");
+    if (hl1Dot) hl1Dot.style.background = accent;
+    const hl2 = document.getElementById("zv-hero-hl2");
+    if (hl2) hl2.style.color = p.heroHeadlineAccentColor ?? p.heroHl2Color ?? "#7268A4";
+    const h1 = document.getElementById("zv-hero-h1");
+    if (h1) h1.style.color = p.heroHeadlineBaseColor ?? "#000000";
+  }
+
+  renderVals() {
+    const digits = String(this.props.whatsappNumber ?? "5500000000000").replace(/\D/g, "");
+    const msg = encodeURIComponent("Olá! Quero saber mais sobre os serviços da Zanvie.");
+    const raw = this.state.activeSection;
+    const menu = raw === "estrategia" ? "inicio" : raw; // seções 1+2 => "Início"; 3 => "Serviços"; 4 => "Entre em contato"
+    const activeBg = this.props.navPillActiveColor ?? "#7B6FE0";
+    const activeColor = this.props.headerActiveTextColor ?? "#ffffff";
+    const inactiveColor = this.props.navPillInactiveTextColor ?? "#f5f5f5";
+    const pill = (id) => ({
+      bg: menu === id ? activeBg : "transparent",
+      color: menu === id ? activeColor : inactiveColor
+    });
+    const p = this.props;
+    const faqDefaults = [
+      ["Quanto tempo leva para ver resultado?", "Os primeiros sinais de performance aparecem já nas primeiras semanas de campanha, mas resultados consistentes costumam vir a partir do primeiro mês de ajustes e otimização."],
+      ["Funciona para o meu tipo de negócio?", "Trabalhamos com negócios locais de diversos segmentos. Cada estratégia é construída com base no seu nicho, público e objetivo."],
+      ["Preciso ter um site pronto?", "Não. Também criamos sites e landing pages pensados especificamente para converter em campanhas pagas."],
+      ["Como funciona o contrato?", "Sem burocracia excessiva. Definimos escopo, prazo e investimento antes de começar, com total transparência."],
+      ["Vocês cuidam de tudo ou preciso participar?", "Cuidamos da execução técnica e estratégica, mas o alinhamento constante com você garante que a campanha reflita a identidade do seu negócio."]
+    ];
+    const faqItems = faqDefaults.map((d, i) => ({
+      q: p["faqQ" + (i + 1)] ?? d[0],
+      a: p["faqA" + (i + 1)] ?? d[1]
+    }));
+    const faqOpenIdx = (this.state.faqOpen === undefined || this.state.faqOpen === null) ? (p.faqFirstCardOpenByDefault !== false ? 0 : -1) : this.state.faqOpen;
+    const faqCards = faqItems.map((it, i) => ({
+      q: it.q,
+      a: it.a,
+      rows: i === faqOpenIdx ? "1fr" : "0fr",
+      chevTransform: "rotate(" + (i === faqOpenIdx ? 180 : 0) + "deg)",
+      ariaExpanded: i === faqOpenIdx ? "true" : "false",
+      toggle: () => this.setState({ faqOpen: faqOpenIdx === i ? -1 : i })
+    }));
+    return {
+      faqCards,
+      waHref: "https://wa.me/" + digits + "?text=" + msg,
+      navTransform: this.state.navHidden ? "translateY(-110%)" : "translateY(0)",
+      pillInicioBg: pill("inicio").bg, pillInicioColor: pill("inicio").color,
+      pillServicosBg: pill("servicos").bg, pillServicosColor: pill("servicos").color,
+      pillContatoBg: pill("contato").bg, pillContatoColor: pill("contato").color,
+      servPrev: () => this.setState(s => { const loop = this.props.carouselLoop !== false; const c = s.servIndex ?? 0; let ni = c - 1; if (ni < 0) ni = loop ? 2 : 0; return { servIndex: ni, servDir: -1 }; }),
+      servNext: () => this.setState(s => { const loop = this.props.carouselLoop !== false; const c = s.servIndex ?? 0; let ni = c + 1; if (ni > 2) ni = loop ? 0 : 2; return { servIndex: ni, servDir: 1 }; }),
+      servGo0: () => this.setState(s => ({ servIndex: 0, servDir: 0 > (s.servIndex ?? 0) ? 1 : -1 })),
+      servGo1: () => this.setState(s => ({ servIndex: 1, servDir: 1 > (s.servIndex ?? 0) ? 1 : -1 })),
+      servGo2: () => this.setState(s => ({ servIndex: 2, servDir: 2 > (s.servIndex ?? 0) ? 1 : -1 }))
+    };
+  }
+}
+</script>
+</body>
+</html>

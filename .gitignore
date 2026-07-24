@@ -1,0 +1,57 @@
+# ---- Arquivos de sistema operacional ----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ---- Editores / IDEs ----
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+
+# ---- Dependências e cache de build (caso o projeto passe a ter build) ----
+node_modules/
+.npm/
+.yarn/
+.pnp.*
+.cache/
+.parcel-cache/
+.vite/
+dist/
+build/
+.temp/
+tmp/
+
+# ---- Deploy / hospedagem estática ----
+.netlify/
+.vercel/
+.firebase/
+
+# ---- Variáveis de ambiente e segredos ----
+.env
+.env.*
+!.env.example
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Backups temporários ----
+*.bak
+*.orig
+*.rej

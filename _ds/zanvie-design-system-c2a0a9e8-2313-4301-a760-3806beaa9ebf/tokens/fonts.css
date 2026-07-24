@@ -1,0 +1,18 @@
+/* Zanvie — webfonts
+   Type system: Onest (display/headlines, variable weight — replaces the
+   earlier SF Pro Display substitution) + Space Grotesk (body/label/UI text,
+   loaded from Google Fonts — no files supplied for it).
+
+   Fraunces Italic + Inter (original brief pairing) and SF Pro Display
+   (earlier substitution) remain in assets/fonts/ but are no longer wired
+   into @font-face — kept on disk only in case of a revert. */
+
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
+
+@font-face {
+  font-family: "Onest";
+  src: url("../assets/fonts/onest/Onest-Variable.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
