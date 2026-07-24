@@ -303,8 +303,22 @@ class Component extends DCLogic {
   componentDidMount() {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     this._applyViewportUnit();
-    this._onResizeVH = () => this._applyViewportUnit();
-    window.addEventListener("resize", this._onResizeVH);
+    // Despachante único de resize: substitui os 8 listeners que existiam antes
+    // (um por sub-sistema), preservando a mesma ordem de execução que ocorria
+    // no caminho comum (three.js já carregado antes do mount). Isso também
+    // torna a ordem determinística — antes, a posição de _globeResize na fila
+    // de listeners dependia de quando window.THREE ficava disponível.
+    this._onResize = () => {
+      this._applyViewportUnit();
+      if (this._layoutStack) this._layoutStack();
+      if (this._globeResize) this._globeResize();
+      this._applyStarsTweaks();
+      this._layoutTimeline();
+      this._applyResponsiveHeader();
+      this._applyContactResponsive();
+      this._applyFaqTweaks();
+    };
+    window.addEventListener("resize", this._onResize);
     this._onScroll = () => {
       const nav = 72;
       const hide = window.scrollY > window.innerHeight - nav;
@@ -380,7 +394,6 @@ class Component extends DCLogic {
         secoes.style.marginTop = (-rise) + "px";
       }
     };
-    window.addEventListener("resize", this._layoutStack);
     this._layoutStack();
     const s2El = document.getElementById("estrategia");
     if (window.ResizeObserver && s2El) {
@@ -559,15 +572,7 @@ class Component extends DCLogic {
 
     this._initGlobe();
     this._initStars();
-    this._onResizeStars = () => this._applyStarsTweaks();
-    window.addEventListener("resize", this._onResizeStars);
     this._applyAllTweaks();
-    this._onResizeHeader = () => this._applyResponsiveHeader();
-    window.addEventListener("resize", this._onResizeHeader);
-    this._onResizeContact = () => this._applyContactResponsive();
-    window.addEventListener("resize", this._onResizeContact);
-    this._onResizeFaq = () => this._applyFaqTweaks();
-    window.addEventListener("resize", this._onResizeFaq);
     // Navegação animada pela navbar: suspende o scroll-snap durante o percurso e
     // sincroniza os estados internos (Globo/Servicos) ao chegar no destino.
     this._navGo = (target) => {
@@ -935,7 +940,6 @@ class Component extends DCLogic {
       this._updateGlobeTextBlur(0, "linear");
     };
     this._globeResize();
-    window.addEventListener("resize", this._globeResize);
     requestAnimationFrame(() => requestAnimationFrame(() => this._globeResize()));
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this._globeResize());
     if (window.IntersectionObserver) {
@@ -1725,11 +1729,6 @@ class Component extends DCLogic {
     const line = document.getElementById("zv-timeline-line");
     if (line) line.style.background = p.timelineLineColor ?? "rgba(255,255,255,0.16)";
     this._layoutTimeline();
-    if (!this._tlResizeBound) {
-      this._tlResize = () => this._layoutTimeline();
-      window.addEventListener("resize", this._tlResize);
-      this._tlResizeBound = true;
-    }
   }
 
   _servZone() {
@@ -1868,8 +1867,7 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     window.removeEventListener("scroll", this._onScroll);
-    if (this._onResizeVH) window.removeEventListener("resize", this._onResizeVH);
-    window.removeEventListener("resize", this._layoutStack);
+    if (this._onResize) window.removeEventListener("resize", this._onResize);
     if (this._stackRO) this._stackRO.disconnect();
     window.removeEventListener("wheel", this._onWheel);
     window.removeEventListener("keydown", this._onKeySnap);
@@ -1883,14 +1881,8 @@ class Component extends DCLogic {
     clearTimeout(this._globeBlockT);
     if (this._globeRAF) cancelAnimationFrame(this._globeRAF);
     if (this._starRAF) cancelAnimationFrame(this._starRAF);
-    if (this._onResizeStars) window.removeEventListener("resize", this._onResizeStars);
-    if (this._globeResize) window.removeEventListener("resize", this._globeResize);
     if (this._globeIO) this._globeIO.disconnect();
     if (this._globe) this._globe.renderer.dispose();
-    if (this._onResizeHeader) window.removeEventListener("resize", this._onResizeHeader);
-    if (this._onResizeContact) window.removeEventListener("resize", this._onResizeContact);
-    if (this._onResizeFaq) window.removeEventListener("resize", this._onResizeFaq);
-    if (this._tlResize) window.removeEventListener("resize", this._tlResize);
   }
 
   _applyHeroTweaks() {
