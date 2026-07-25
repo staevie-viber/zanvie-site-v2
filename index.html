@@ -1390,6 +1390,13 @@ class Component extends DCLogic {
     return "rgba(" + r + "," + g + "," + b + "," + a + ")";
   }
 
+  _hexLuminance(hex) {
+    let h = String(hex || "#000000").replace("#", "");
+    if (h.length === 3) h = h.split("").map(x => x + x).join("");
+    const r = parseInt(h.slice(0,2),16) || 0, g = parseInt(h.slice(2,4),16) || 0, b = parseInt(h.slice(4,6),16) || 0;
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  }
+
   _applyHeaderTweaks() {
     const p = this.props;
     const bar = document.getElementById("zv-navbar");
@@ -1404,10 +1411,7 @@ class Component extends DCLogic {
     }
     const logo = document.getElementById("zv-logo-img");
     if (logo) {
-      const c = (p.logoTextColor ?? "#ffffff").replace("#", "");
-      const hex = c.length === 3 ? c.split("").map(x => x + x).join("") : c;
-      const r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
-      const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+      const lum = this._hexLuminance(p.logoTextColor ?? "#ffffff");
       logo.src = lum > 0.5 ? "assets/logo-zanvie-white.png" : "assets/logo-zanvie-dark.png";
     }
     const pillNav = document.getElementById("zv-navpill");
@@ -1453,9 +1457,7 @@ class Component extends DCLogic {
     const circle = document.getElementById("zv-wa-circle");
     const pill = document.getElementById("zv-navpill");
     // variante de cor do logo, coerente com _applyHeaderTweaks
-    const lc = (p.logoTextColor ?? "#ffffff").replace("#", "");
-    const hex = lc.length === 3 ? lc.split("").map(x => x + x).join("") : lc;
-    const lum = (0.299 * parseInt(hex.slice(0,2),16) + 0.587 * parseInt(hex.slice(2,4),16) + 0.114 * parseInt(hex.slice(4,6),16)) / 255;
+    const lum = this._hexLuminance(p.logoTextColor ?? "#ffffff");
     const tone = lum > 0.5 ? "white" : "dark";
 
     if (!compact) {
@@ -1535,10 +1537,8 @@ class Component extends DCLogic {
       const blurAmt = p.navPillBlurMobile ?? p.navPillGlassBlur ?? 20;
       const pf = "blur(" + blurAmt + "px) saturate(150%)";
       pill.style.backdropFilter = pf; pill.style.setProperty("-webkit-backdrop-filter", pf);
-      const bc = (p.navPillBorderColorMobile ?? "#ffffff").replace("#", "");
-      const bcFull = bc.length === 3 ? bc.split("").map(x => x + x).join("") : bc;
       const bo = p.navPillBorderOpacityMobile ?? (p.navPillGlassBorderOpacity ?? 0.08);
-      pill.style.border = "1px solid rgba(" + parseInt(bcFull.slice(0,2),16) + "," + parseInt(bcFull.slice(2,4),16) + "," + parseInt(bcFull.slice(4,6),16) + "," + bo + ")";
+      pill.style.border = "1px solid " + this._hexToRgba(p.navPillBorderColorMobile ?? "#ffffff", bo);
       ["zv-pill-1","zv-pill-2","zv-pill-3"].forEach((id) => {
         const it = document.getElementById(id);
         if (it) { it.style.padding = "6px 9px"; it.style.fontSize = (p.navItemFontSizeMobile ?? 11) + "px"; }
