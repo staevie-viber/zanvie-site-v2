@@ -300,6 +300,44 @@
 class Component extends DCLogic {
   state = { navHidden: false, activeSection: "inicio", servIndex: 0, servDir: 1, faqOpen: null };
 
+  // ===== Máquina de estados de animação — fonte única de verdade =====
+  // null = ocioso; senão { owner: "snap"|"globe"|"nav"|"serv", token: n }.
+  // O token de geração impede que o timer de uma animação já superada destrave
+  // outra que começou depois: antes, as 4 rotinas escreviam no mesmo booleano
+  // _snapAnimating e o primeiro timer a disparar liberava o input em pleno voo
+  // da outra. scrollBehavior passa a ser propriedade exclusiva da máquina —
+  // adquirido em _beginAnim, devolvido só por quem ainda detém o token.
+  _anim = null;
+  _animSeq = 0;
+
+  _beginAnim(owner) {
+    const token = ++this._animSeq;
+    this._anim = { owner, token };
+    document.documentElement.style.scrollBehavior = "auto";
+    return token;
+  }
+
+  _endAnim(token) {
+    if (!this._anim || this._anim.token !== token) return;   // timer velho: ignora
+    this._anim = null;
+    document.documentElement.style.scrollBehavior = "";
+  }
+
+  // Derivados: as leituras espalhadas pelo arquivo seguem com a mesma sintaxe.
+  // _servAnimating é exatamente "o dono é _animServ ou _navGo" — os dois únicos
+  // pontos que escreviam o flag antigo, sempre no mesmo instante que a trava.
+  get _snapAnimating() { return this._anim !== null; }
+  get _servAnimating() {
+    const o = this._anim && this._anim.owner;
+    return o === "serv" || o === "nav";
+  }
+
+  // Escritor único de _globeState: mantém o estado e o render sempre em par.
+  _setGlobeState(n) {
+    this._globeState = n;
+    this._renderGlobeState(n);
+  }
+
   componentDidMount() {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     this._applyViewportUnit();
@@ -359,8 +397,7 @@ class Component extends DCLogic {
         }
         // Reentrando pelo topo (vindo da Hero): reseta o estado interno do Globo.
         if (window.scrollY < gTop - 2 && this._globeState !== 0 && !this._snapAnimating) {
-          this._globeState = 0;
-          this._renderGlobeState(0);
+          this._setGlobeState(0);
         }
       }
       this._reconcileServ();
@@ -403,7 +440,7 @@ class Component extends DCLogic {
       if (gEl) this._stackRO.observe(gEl);
     }
     // ===== Scroll-snap: SÓ no trecho Hero <-> Seção 2 <-> Seção 3 =====
-    this._snapAnimating = false;
+    // (_snapAnimating agora deriva de _anim, inicializado no corpo da classe)
     this._wheelAccum = 0;
     this._touchDelta = 0;
     this._snapStops = () => {
@@ -438,9 +475,10 @@ class Component extends DCLogic {
     };
     this._snapTween = (from, to, dur, cb) => {
       if (this._snapRAF) cancelAnimationFrame(this._snapRAF);
-      const done = () => { document.documentElement.style.scrollBehavior = ""; cb && cb(); };
+      // scrollBehavior é adquirido/devolvido pela máquina (_beginAnim/_endAnim);
+      // _snapGo já detém o token quando chega aqui, nos dois caminhos.
+      const done = () => { cb && cb(); };
       if (dur <= 0 || Math.abs(to - from) < 1) { window.scrollTo(0, to); done(); return; }
-      document.documentElement.style.scrollBehavior = "auto";
       const t0 = performance.now();
       const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
       const step = now => {
@@ -452,25 +490,25 @@ class Component extends DCLogic {
       this._snapRAF = requestAnimationFrame(step);
     };
     this._snapGo = (target, stops) => {
-      this._snapAnimating = true;
-      if (target === 0) { this._globeState = 3; this._renderGlobeState(3); }
+      const token = this._beginAnim("snap");
+      // Chegando por cima (target 0), o Globo é forçado ao estado final 3.
+      if (target === 0) this._setGlobeState(3);
       const dur = this.props.scrollSnapTransitionDuration ?? 750;
       this._snapTween(window.scrollY, stops[target], dur, () => {
-        setTimeout(() => { this._snapAnimating = false; this._wheelAccum = 0; }, 60);
+        setTimeout(() => { this._endAnim(token); this._wheelAccum = 0; }, 60);
       });
     };
     // Estados internos do Globo (0=centro,1=dir+texto esq,2=esq+texto dir,3=centro)
     this._globeState = this._globeState || 0;
     this._globeGo = (target) => {
-      this._snapAnimating = true;
-      this._globeState = target;
-      this._renderGlobeState(target);
+      const token = this._beginAnim("globe");
+      this._setGlobeState(target);
       const dur = this.props.globeStateTransitionDuration ?? 750;
       this._globeFast = true;
       clearTimeout(this._globeFastT);
       this._globeFastT = setTimeout(() => { this._globeFast = false; }, dur);
       clearTimeout(this._globeBlockT);
-      this._globeBlockT = setTimeout(() => { this._snapAnimating = false; this._wheelAccum = 0; }, dur + 40);
+      this._globeBlockT = setTimeout(() => { this._endAnim(token); this._wheelAccum = 0; }, dur + 40);
     };
     // Intercepta o passo no Globo: avança/recua estado interno em vez de rolar.
     // Retorna true se consumiu o passo (o chamador não deve dar snap de scroll).
@@ -588,9 +626,8 @@ class Component extends DCLogic {
       // O easing do percurso é calculado aqui no rAF; o scroll por frame precisa
       // ser instantâneo. Sob scroll-behavior:smooth cada scrollTo viraria um
       // scroll suave do browser reiniciado a cada frame => navegação em câmera lenta.
-      document.documentElement.style.scrollBehavior = "auto";
-      this._snapAnimating = true;
-      this._servAnimating = true;
+      // O "auto" vem de _beginAnim, que também assume a posse da trava.
+      const token = this._beginAnim("nav");
       const from = window.scrollY, t0 = performance.now();
       const dur = Math.max(1, this.props.navScrollDuration ?? 1300);
       const ease = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
@@ -599,13 +636,12 @@ class Component extends DCLogic {
         window.scrollTo(0, from + (y - from) * ease(t));
         if (t < 1) { this._navRAF = requestAnimationFrame(step); return; }
         this._navRAF = null;
-        document.documentElement.style.scrollBehavior = "";
         const st = this._snapStops ? this._snapStops() : [0, 0];
         const gs = window.scrollY < st[0] - 2 ? 0 : 3;
-        this._globeState = gs;
-        this._renderGlobeState(gs);
-        this._servAnimating = false;
-        this._snapAnimating = false;
+        this._setGlobeState(gs);
+        // Liberar ANTES de _reconcileServ: ele early-returna se _servAnimating
+        // ainda estiver ativo — mesma ordem do código anterior.
+        this._endAnim(token);
         this._wheelAccum = 0;
         this._reconcileServ();
       };
@@ -1769,13 +1805,12 @@ class Component extends DCLogic {
   _animServ(reverse, z) {
     const serv = document.getElementById("servicos");
     if (!serv) return;
-    this._servAnimating = true;
-    this._snapAnimating = true;
     // Reposicionamentos por scrollTo abaixo devem ser instantâneos. No sentido
     // reverso o salto é de uma viewport inteira; sob scroll-behavior:smooth ele
     // viraria um scroll suave do browser competindo com a transição de transform
-    // — era isso que deixava a reversa menos fluida que o avanço.
-    document.documentElement.style.scrollBehavior = "auto";
+    // — era isso que deixava a reversa menos fluida que o avanço. O "auto" vem
+    // de _beginAnim, que também assume a posse da trava (dono "serv").
+    const token = this._beginAnim("serv");
     // Spacer preserva o fluxo/altura do documento enquanto Servicos vira camada fixa
     // (sem ele, o FAQ e seu degradê branco sobem por trás durante a animação).
     let spacer = document.getElementById("zv-serv-spacer");
@@ -1826,10 +1861,10 @@ class Component extends DCLogic {
       if (sp) sp.style.height = "0px";
       if (reverse) { window.scrollTo(0, z.pinY); this._servCovered = false; }
       else { window.scrollTo(0, z.coverY); this._servCovered = true; }
-      document.documentElement.style.scrollBehavior = "";
       // restaura o glass/background da seção conforme os Tweaks
       this._applyServicosTweaks();
-      setTimeout(() => { this._servAnimating = false; this._snapAnimating = false; this._wheelAccum = 0; }, 60);
+      // _endAnim devolve scrollBehavior junto com a trava, ao fim da janela de 60ms.
+      setTimeout(() => { this._endAnim(token); this._wheelAccum = 0; }, 60);
     }, dur + 30);
   }
 
