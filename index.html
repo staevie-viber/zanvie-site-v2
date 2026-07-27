@@ -493,6 +493,27 @@ class Component extends DCLogic {
             this._lockScroll(gTop);
           }
         }
+        // Recuperação: sequência do Globo em andamento, mas a página escapou do
+        // ponto de pin sem estar travada. Acontece quando um evento de wheel
+        // inicia _globeGo antes de o evento de scroll (assíncrono, coalescido a
+        // um por frame) ter engatado a trava: _snapAnimating liga, o engate por
+        // cruzamento acima é pulado e a borda se perde, porque _lastScrollY é
+        // atualizado de qualquer forma. Sem esta cláusula a trava ficava
+        // desabilitada pelo resto da passagem e a Timeline subia com o Globo
+        // ainda em estado 1 ou 2.
+        // NÃO exige !_snapAnimating de propósito: era exatamente essa condição
+        // que deixava a janela da transição desprotegida. Em vez disso usa o
+        // DONO da máquina de token — "snap"/"nav"/"serv" precisam rolar de
+        // verdade; "globe" e ocioso não. Só reancora, sem tocar em _globeState,
+        // para não rebobinar uma sequência já iniciada.
+        const dono = this._anim && this._anim.owner;
+        if (!this._scrollLocked && !this._globeReleased
+            && this._snapActive && this._snapActive()
+            && wTop > gTop && y > gTop && y <= wTop
+            && (this._globeState ?? 0) < 3
+            && (!dono || dono === "globe")) {
+          this._lockScroll(gTop);
+        }
         // Rede de segurança: se algo mover o scroll durante a trava, devolve na hora.
         if (this._scrollLocked && Math.round(y) !== Math.round(this._lockY)) {
           window.scrollTo(0, this._lockY);
