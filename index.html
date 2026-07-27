@@ -311,6 +311,9 @@ class Component extends DCLogic {
   _animSeq = 0;
 
   _beginAnim(owner) {
+    // "snap", "nav" e "serv" MOVEM o scroll — precisam do documento rolável.
+    // "globe" não move nada: mantém a trava total durante toda a sequência.
+    if (owner !== "globe") this._unlockScroll();
     const token = ++this._animSeq;
     this._anim = { owner, token };
     document.documentElement.style.scrollBehavior = "auto";
@@ -330,6 +333,79 @@ class Component extends DCLogic {
   get _servAnimating() {
     const o = this._anim && this._anim.owner;
     return o === "serv" || o === "nav";
+  }
+
+  // ===== Trava TOTAL de scroll na sequência do Globo =====
+  // A abordagem anterior "resistia" ao scroll (scrollTo por frame), o que
+  // compete com a inércia e perde no mobile: uma vez que o iOS entrega o gesto
+  // ao compositor, o fling não pode mais ser cancelado. Aqui o scroll deixa de
+  // existir durante a sequência, então não há inércia a combater.
+  //   1. touch-action/overscroll-behavior => o browser nem inicia o pan, logo
+  //      NENHUM momentum é gerado (ataca a origem, não o sintoma).
+  //   2. overflow:hidden => documento não-rolável de fato (roda, teclas, arrasto
+  //      da barra) e é o único recurso capaz de matar um fling já em voo.
+  //   3. preventDefault incondicional nos handlers (ver ramo _scrollLocked).
+  _scrollLocked = false;
+  _lockY = 0;
+  _lockPad = null;
+  _globeReleased = false;
+  _lastScrollY = 0;
+
+  _lockScroll(y) {
+    if (this._scrollLocked) return;
+    this._scrollLocked = true;
+    this._lockY = y;
+    const de = document.documentElement;
+    // Mede a barra ANTES de escondê-la: com overflow:hidden a diferença some.
+    // Compensar com padding evita o salto horizontal de ~15px quando a barra
+    // desaparece. Fica contido na trava — nada de CSS global (scrollbar-gutter
+    // no <html> deslocaria o layout em ambientes sem barra clássica).
+    const sw = window.innerWidth - de.clientWidth;
+    de.style.overflow = "hidden";
+    de.style.touchAction = "none";
+    de.style.overscrollBehavior = "none";
+    if (sw > 0) { this._lockPad = de.style.paddingRight; de.style.paddingRight = sw + "px"; }
+    else { this._lockPad = null; }
+    // Safari pode zerar o scrollTop ao aplicar overflow:hidden — restaura já.
+    // Como a trava ocorre exatamente em gTop, a restauração é invisível.
+    if (Math.round(window.scrollY) !== Math.round(y)) window.scrollTo(0, y);
+  }
+
+  _unlockScroll() {
+    if (!this._scrollLocked) return;
+    this._scrollLocked = false;
+    const de = document.documentElement;
+    de.style.overflow = "";
+    de.style.touchAction = "";
+    de.style.overscrollBehavior = "";
+    if (this._lockPad !== null && this._lockPad !== undefined) { de.style.paddingRight = this._lockPad; this._lockPad = null; }
+    // Restaura a posição depois de devolver a rolagem (a ordem importa: com
+    // overflow:hidden ainda ativo o scrollTo seria ignorado).
+    if (Math.round(window.scrollY) !== Math.round(this._lockY)) window.scrollTo(0, this._lockY);
+  }
+
+  // Redimensionar move gTop; sem isto o _lockY vira obsoleto e o Globo deixa de
+  // ficar exatamente no ponto de pin (medido: 100px de desvio ao trocar de
+  // viewport com a trava ativa). Destrava para poder reposicionar — com
+  // overflow:hidden ativo o scrollTo seria ignorado — e trava no ponto novo.
+  _repinLock() {
+    if (!this._scrollLocked || !this._snapStops) return;
+    const gTop = this._snapStops()[0];
+    if (Math.round(gTop) === Math.round(this._lockY)) return;
+    this._unlockScroll();
+    this._lockScroll(gTop);
+  }
+
+  // Fim da sequência na direção d: destrava e entrega o scroll.
+  // d > 0 (descendo): dispara o snap animado que leva à Timeline, como hoje.
+  // d < 0 (subindo):  só destrava — o scroll nativo devolve à Hero, como hoje.
+  _releaseGlobeSeq(d) {
+    this._globeReleased = true;
+    this._unlockScroll();
+    if (d > 0 && this._snapStops && this._snapGo) {
+      const stops = this._snapStops();
+      if (stops[1] > stops[0]) this._snapGo(1, stops);
+    }
   }
 
   // Escritor único de _globeState: mantém o estado e o render sempre em par.
@@ -355,6 +431,9 @@ class Component extends DCLogic {
       this._applyResponsiveHeader();
       this._applyContactResponsive();
       this._applyFaqTweaks();
+      // Por último: o ponto de pin só é confiável depois que todos os layouts
+      // acima recalcularam as alturas de que _snapStops depende.
+      this._repinLock();
     };
     window.addEventListener("resize", this._onResize);
     this._onScroll = () => {
@@ -388,17 +467,41 @@ class Component extends DCLogic {
         // Volta a ficar visível normalmente se o usuário rolar de volta pra cima.
         const gSection = document.getElementById("globo");
         if (gSection) gSection.style.visibility = (wTop > gTop && window.scrollY >= wTop) ? "hidden" : "visible";
-        // Travamento ABSOLUTO no rodapé: enquanto os estados internos (0-2) não
-        // terminam, qualquer scrollY além de gTop — inclusive overshoot de flings
-        // muito rápidos que ultrapassariam wTop num único frame — é puxado de volta
-        // para gTop. Assim nenhum estado é pulado e a Seção 3 nunca sobe antes da hora.
-        if (this._snapActive && this._snapActive() && !this._snapAnimating && (this._globeState ?? 0) < 3 && wTop > gTop && window.scrollY > gTop) {
-          window.scrollTo(0, gTop);
+        // ===== Engate da trava TOTAL =====
+        // Substitui o antigo clamp por scrollTo (que competia com a inércia e
+        // perdia). Aqui o documento deixa de rolar; nada há para a inércia
+        // continuar. Fora da zona, rearma a sequência para a próxima entrada.
+        const y = window.scrollY;
+        const prev = this._lastScrollY ?? y;
+        // Rearma quando o usuário se afasta do ponto de pin (subiu de volta à
+        // Hero ou desceu para a Timeline), para a próxima passagem travar de novo.
+        if (Math.abs(y - gTop) > 80) this._globeReleased = false;
+        if (this._snapActive && this._snapActive() && wTop > gTop
+            && !this._scrollLocked && !this._globeReleased && !this._snapAnimating) {
+          // Engate por CRUZAMENTO do ponto de pin (não por presença na zona):
+          // com presença, subir da Timeline travaria em qualquer ponto do
+          // intervalo e arrancaria o usuário de volta para gTop. O cruzamento
+          // também sobrevive a saltos grandes de um fling, que podem pular a
+          // vizinhança de gTop inteira num único evento de scroll.
+          const cruzouDescendo = prev < gTop && y >= gTop;
+          const cruzouSubindo = prev > gTop && y <= gTop;
+          if (cruzouDescendo || cruzouSubindo) {
+            // Estado inicial pela DIREÇÃO da travessia — antes dependia de qual
+            // caminho tivesse escrito _globeState por último, e era isso que
+            // deixava o Globo inconsistente ao subir de volta.
+            this._setGlobeState(cruzouDescendo ? 0 : 3);
+            this._lockScroll(gTop);
+          }
+        }
+        // Rede de segurança: se algo mover o scroll durante a trava, devolve na hora.
+        if (this._scrollLocked && Math.round(y) !== Math.round(this._lockY)) {
+          window.scrollTo(0, this._lockY);
         }
         // Reentrando pelo topo (vindo da Hero): reseta o estado interno do Globo.
-        if (window.scrollY < gTop - 2 && this._globeState !== 0 && !this._snapAnimating) {
+        if (y < gTop - 2 && this._globeState !== 0 && !this._snapAnimating && !this._scrollLocked) {
           this._setGlobeState(0);
         }
+        this._lastScrollY = y;
       }
       this._reconcileServ();
     };
@@ -519,8 +622,23 @@ class Component extends DCLogic {
       return false;
     };
     this._snapActive = () => this.props.scrollSnapEnabled !== false;
+    // Passo de gesto durante a trava total: um gesto = um estado. Gestos que
+    // chegam com uma transição em curso são DESCARTADOS (não enfileirados).
+    // Esgotada a sequência na direção, libera a página.
+    this._lockedStep = (d) => {
+      if (this._snapAnimating) return;
+      if (!d) return;
+      if (!this._globeStep(d, 0)) this._releaseGlobeSeq(d);
+    };
     this._onWheel = (e) => {
       if (!this._snapActive()) return;
+      // Ramo travado: SEMPRE previne — nunca há saída muda que devolva o
+      // scroll ao browser (era por onde o momentum nascia).
+      if (this._scrollLocked) {
+        e.preventDefault();
+        this._lockedStep(e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0));
+        return;
+      }
       if (this._servAnimating) { e.preventDefault(); return; }
       { const sd = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0); if (sd !== 0 && this._servTransition(sd)) { e.preventDefault(); return; } }
       const stops = this._snapStops();
@@ -545,6 +663,15 @@ class Component extends DCLogic {
     };
     this._onKeySnap = (e) => {
       if (!this._snapActive()) return;
+      if (this._scrollLocked) {
+        let kd = 0;
+        if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " " || e.key === "Spacebar") kd = 1;
+        else if (e.key === "ArrowUp" || e.key === "PageUp") kd = -1;
+        else if (e.key !== "Home" && e.key !== "End") return;
+        e.preventDefault();          // inclui Home/End: não escapam da trava
+        this._lockedStep(kd);
+        return;
+      }
       const stops = this._snapStops();
       const last = stops.length - 1;
       const y = window.scrollY;
@@ -567,6 +694,14 @@ class Component extends DCLogic {
     this._onTouchStart = (e) => { this._touchY = e.touches[0].clientY; this._touchDelta = 0; };
     this._onTouchMove = (e) => {
       if (!this._snapActive()) return;
+      // Ramo travado: previne TODO touchmove, desde o primeiro. É isto que
+      // impede o iOS de entregar o gesto ao compositor — depois que ele entrega,
+      // o fling não pode mais ser cancelado por preventDefault.
+      if (this._scrollLocked) {
+        e.preventDefault();
+        this._touchDelta = this._touchY - e.touches[0].clientY;
+        return;
+      }
       if (this._servAnimating) { e.preventDefault(); return; }
       { const dyv = this._touchY - e.touches[0].clientY; const sd = dyv > 0 ? 1 : -1; const z = this._servZone && this._servZone(); if (z) { const y = window.scrollY; if ((!this._servCovered && sd > 0 && y >= z.triggerY - 2 && y < z.coverY - 2) || (this._servCovered && sd < 0 && y <= z.coverY + 2 && y > z.pinY + 2)) { e.preventDefault(); this._touchDelta = dyv; return; } } }
       const stops = this._snapStops();
@@ -584,6 +719,13 @@ class Component extends DCLogic {
     };
     this._onTouchEnd = () => {
       if (!this._snapActive()) return;
+      if (this._scrollLocked) {
+        const dy = this._touchDelta || 0;
+        this._touchDelta = 0;
+        const th = this.props.scrollSnapTouchThreshold ?? 50;
+        if (Math.abs(dy) >= th) this._lockedStep(dy > 0 ? 1 : -1);
+        return;
+      }
       if (this._servAnimating) return;
       { const dyv = this._touchDelta || 0; if (Math.abs(dyv) > 4) { const sd = dyv > 0 ? 1 : -1; if (this._servTransition(sd)) { this._touchDelta = 0; return; } } }
       const stops = this._snapStops();
@@ -1901,6 +2043,7 @@ class Component extends DCLogic {
   }
 
   componentWillUnmount() {
+    this._unlockScroll();   // a trava nunca pode sobreviver ao componente
     window.removeEventListener("scroll", this._onScroll);
     if (this._onResize) window.removeEventListener("resize", this._onResize);
     if (this._stackRO) this._stackRO.disconnect();
