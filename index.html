@@ -632,7 +632,16 @@ class Component extends DCLogic {
       clearTimeout(this._globeFastT);
       this._globeFastT = setTimeout(() => { this._globeFast = false; }, dur);
       clearTimeout(this._globeBlockT);
-      this._globeBlockT = setTimeout(() => { this._endAnim(token); this._wheelAccum = 0; }, dur + 40);
+      // Libera o INPUT antes do fim da ANIMAÇÃO, que segue rodando em dur (é
+      // transição CSS, independente deste timer). Medido: a curva
+      // cubic-bezier(0.22,1,0.36,1) entrega 94% do movimento em 400ms e os
+      // últimos 350ms rendem só 2,2% — bloquear até dur+40 prendia o usuário
+      // por um trecho em que quase nada acontece na tela.
+      // Fração de dur (não valor fixo) porque globeStateTransitionDuration é
+      // tweak editável (200–1600ms): piso de 250ms protege a percepção, que é
+      // wall-clock; teto em dur evita liberar depois do fim em durações curtas.
+      const R = Math.min(dur, Math.max(250, dur * 0.45));
+      this._globeBlockT = setTimeout(() => { this._endAnim(token); this._wheelAccum = 0; }, R);
     };
     // Intercepta o passo no Globo: avança/recua estado interno em vez de rolar.
     // Retorna true se consumiu o passo (o chamador não deve dar snap de scroll).
