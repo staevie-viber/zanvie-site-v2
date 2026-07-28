@@ -1672,6 +1672,19 @@ class Component extends DCLogic {
         pill.style.padding = "4px"; pill.style.gap = "4px";
         pill.style.height = "";
         pill.style.top = "14px";
+        // Devolve ao desktop exatamente o que ele tem hoje. Necessário porque o
+        // ramo compacto escreve estilo inline no pill, e inline persiste: sem
+        // reset, ir de mobile p/ desktop SEM RELOAD carregaria junto o estado
+        // mobile (pill oculto ou piscando).
+        // display: o HTML já traz "flex" inline (linha 53) — repor o mesmo valor.
+        pill.style.display = "flex";
+        // opacity/visibility/transition: o HTML NÃO as declara e nenhuma regra
+        // CSS mira #zv-navpill, então o estado de hoje é "sem declaração inline".
+        // "" remove a declaração — repor "1"/"visible"/"none" criaria regras que
+        // hoje não existem.
+        pill.style.opacity = "";
+        pill.style.visibility = "";
+        pill.style.transition = "";
       }
       const px = p.navPillPaddingX ?? 16, py = p.navPillPaddingY ?? 7, fs = p.navItemFontSize ?? 13.6;
       ["zv-pill-1","zv-pill-2","zv-pill-3"].forEach((id) => {
@@ -1756,6 +1769,38 @@ class Component extends DCLogic {
       const hOff = p.navPillHorizontalOffsetMobile ?? 0;
       pill.style.transform = "translateX(calc(-50% + " + hOff + "px))";
       pill.style.maxWidth = (widthOverride > 0 ? widthOverride : halfW * 2) + "px";
+      // ===== MOBILE: presença do pill sincronizada com a header =====
+      // Lê this.state.navHidden — estado já existente; cálculo, threshold e
+      // timing dele não são tocados aqui.
+      //
+      // display CONTINUA flex: display:none impediria o fade, porque transição
+      // não roda em elemento não renderizado. A presença vem de opacity +
+      // visibility. visibility zera o hit-testing e, por ser transicionável com
+      // delay, só vira "visible" quando o fade começa — nunca existe alvo de
+      // clique invisível sobre o logo. (Por isso não uso pointer-events: ele
+      // mudaria instantaneamente e criaria exatamente esse alvo.)
+      //
+      // Entrada: 400ms de espera + 250ms de fade. A header leva 0.4s para sair
+      // e, medido, libera a faixa do pill em ~236ms — 400ms tem folga.
+      // Saída: fade de 100ms imediato. Medido: ao voltar, a header alcança a
+      // faixa do pill em ~145ms — com 150ms sobrava 1 frame de sobreposição a
+      // 3% de opacidade; 100ms termina com ~45ms (≈3 frames) de folga.
+      const pillVis = this.state.navHidden;
+      pill.style.display = "flex";
+      pill.style.opacity = pillVis ? "1" : "0";
+      pill.style.visibility = pillVis ? "visible" : "hidden";
+      pill.style.transition = pillVis
+        ? "opacity 250ms var(--ease-standard) 400ms, visibility 0s linear 400ms"
+        : "opacity 100ms var(--ease-standard) 0s, visibility 0s linear 100ms";
+      // Sem a header na tela acaba a disputa de espaço com logo+botão que forçava
+      // halfW ao piso de 40 (maxWidth 80px, contra os 164px dos 3 itens): a
+      // largura passa a ser a da viewport e os itens cabem inteiros. Aplicado nos
+      // DOIS estados para o pill não encolher no meio do fade de saída.
+      // Respeita navPillWidthMobile quando o tweak define largura explícita.
+      if (widthOverride <= 0) {
+        pill.style.maxWidth = "calc(100vw - 24px)";
+        pill.style.overflowX = "visible";
+      }
     }
     this._styleNavItems();
   }
