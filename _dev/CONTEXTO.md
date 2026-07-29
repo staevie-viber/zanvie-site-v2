@@ -127,8 +127,10 @@ Em ordem cronológica. Os cinco primeiros são a refatoração estrutural.
 | `ff1a730` | Navbar: pill mobile completo, sincronizado com header |
 | `95d9667` | Globo: `box-sizing: border-box` no bloco central mobile |
 | `e9accd0` | Libera input a 45% da animação do globo (382ms vs 890ms) |
-| (globo) | Globo mobile +14,3% nos estados centrados, reposicionado |
-| `4496a74` | Versiona arnês, baselines e utilitários em `_dev/` |
+| `4496a74` | Globo mobile +14,3% nos estados centrados, reposicionado |
+| `0a124e8` | Versiona arnês, baselines e utilitários em `_dev/` |
+| `b9e4613` | Este arquivo de contexto |
+| (P2) | Desliga `backdrop-filter` dos filhos durante a animação de Serviços |
 
 ### Sistemas críticos — não mexer sem necessidade absoluta
 
@@ -195,25 +197,29 @@ Confirme sempre em aparelho real:
 
 ### Diagnóstico concluído: transição Timeline → Serviços (3 problemas)
 
-Investigação feita, **nenhuma correção aplicada**. Ordem recomendada:
+**P2 CORRIGIDO. P1 e P3 abertos.** Ordem recomendada do que resta: P3.
 
-**1º — P2: travadas nas animações (desktop e mobile).** Causa medida:
+**~~1º~~ — P2: travadas nas animações. FEITO.** Causa confirmada:
 `backdrop-filter` ativo no `zv-carousel-track` (blur 16px sobre 982x372 =
-365k px) re-rasterizando a cada frame durante a animação. `_animServ` desliga o
-blur no `#servicos` mas não nos filhos. Desktop cai a ~21fps com pior frame de
-103ms. Correção: estender o desligamento aos descendentes durante a animação,
-restaurando no commit. Risco baixo — não toca estados, trava nem timing.
+365k px) mais os `zv-carousel-prev`/`next` (blur 10px), re-rasterizando a cada
+frame — `_animServ` desligava o blur no `#servicos` mas não nos filhos.
 
-**2º — P1: linha branca entre Timeline e Serviços (desktop).** Folga de layout
-medida = **0px**. A borda cai em posição fracionária (.031 / .328) entre cores
-de contraste máximo. Duas hipóteses: costura subpixel em `dpr >= 2`, ou
-artefato do `backdrop-filter` (o comentário do próprio `_animServ` menciona que
-blur em camada fixa animada "renderiza como pedaço branco em alguns engines").
-**Pode ser resolvido junto com P2** — verificar depois do passo 1. Se
-sobreviver, preferir sobreposição de 1px (`margin-bottom: -1px`) a arredondar
-`_layoutStack`, que alimenta `wTop` e deslocaria stops do scroll-snap.
+Corrigido por **classe CSS**, não por escrita inline: `#servicos.zv-serv-anim *`
+com `backdrop-filter: none !important`, classe adicionada em `_animServ` e
+removida no corpo do commit. Escrever inline nos filhos seria destrutivo — o
+blur deles vive na declaração inline do HTML e não há regra de folha de estilo
+para cair, então sobrescrevê-la (ou resetar com `""`) apagaria o blur em
+definitivo. Ganho medido em A/B controlado: desktop +98% de vazão (~21 → ~43fps)
+e frames >33ms de 14 para 6; mobile +22% de vazão.
 
-**3º — P3: Serviços não anima no mobile.** O mais arriscado. O caminho de toque
+**Não resolveu P1** — ver pendências. Duas coisas continuam abertas e estão
+registradas lá: a causa de P1 e o pior frame de ~96ms no desktop.
+
+**P1: linha branca entre Timeline e Serviços.** Aberto, com causa provável
+identificada e as duas hipóteses antigas (blur, subpixel) **descartadas por
+medição** — ver pendências.
+
+**P3: Serviços não anima no mobile.** O mais arriscado. O caminho de toque
 existe (`_onTouchEnd` linha 760) e chama `_servTransition`, mas `_touchDelta` só
 é setado em `_onTouchMove` se a checagem de zona casar — fora dela, a linha 740
 **retorna sem `preventDefault`**, gerando scroll nativo e momentum. Além disso,
@@ -240,6 +246,23 @@ inicial. Nenhum dos commits recentes tocou essas rotinas.
   "rápido" gira mais devagar que o normal. Investigação iniciada e interrompida
   a pedido do usuário; nenhuma alteração feita. Provável ajuste só de slider.
 - **Baseline mobile defasado** desde `ff1a730` (ver acima).
+- **P1 — causa provável identificada, sem correção.** É o
+  `border-top: 1px solid rgba(255,255,255,0.6)` que o `#servicos` tem **por
+  design** na linha 187: 60% de branco encostando no preto da Timeline.
+  **Hipóteses de blur e de subpixel foram descartadas por medição**: o mesmo
+  frame congelado, com e sem o `backdrop-filter` dos filhos, produz séries de
+  luminância byte a byte idênticas (`probe-p1-costura.js`). Logo P1 e P2 não
+  compartilham causa. Se for corrigir, mexe numa decisão de design, não num
+  artefato de renderização.
+- **Pior frame do desktop na transição de Serviços: ~96ms, sem causa
+  identificada.** Contra 18ms de baseline. Desligar o blur dos filhos derrubou a
+  vazão de ~21fps para ~43fps e os frames >33ms de 14 para 6, mas mexeu só 6%
+  nesse frame isolado — então o blur não era a causa dele. Candidatos não
+  investigados: os 3 slides com `will-change: transform, opacity` sempre
+  promovidos, e o `box-shadow` de 60px de raio do `#servicos`.
+- **Pior frame do mobile piorou** com a correção de P2: 31,5ms → 34,9ms
+  (consistente em 3 execuções), em troca de +22% de vazão. Aceito na época;
+  registrado por não ser ganho puro.
 
 ---
 

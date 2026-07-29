@@ -29,6 +29,16 @@
       to { opacity: 1; transform: translateY(0); }
     }
     #zv-navpill::-webkit-scrollbar { display: none; }
+    /* Janela da transição de "O que fazemos": enquanto a seção anima por
+       transform como camada fixa, o backdrop-filter dos filhos re-rasteriza a
+       cada frame (zv-carousel-track blur 16px sobre ~365k px; prev/next blur
+       10px). A classe existe só durante a animação e sai no commit — o blur
+       volta sozinho, sem nenhuma escrita inline nos filhos. */
+    #servicos.zv-serv-anim,
+    #servicos.zv-serv-anim * {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
   </style>
 </helmet>
 
@@ -2070,6 +2080,10 @@ class Component extends DCLogic {
     // animada é pesado e renderiza como "pedaço branco" em alguns engines).
     serv.style.backdropFilter = "none";
     serv.style.webkitBackdropFilter = "none";
+    // Os filhos (track, prev, next) tambem re-rasterizam blur por frame. Desligados
+    // por classe, nao inline: o blur deles vive na declaracao inline do HTML e
+    // sobrescreve-la a destruiria (nao ha regra de folha de estilo para cair).
+    serv.classList.add("zv-serv-anim");
     serv.style.background = this.props.servSectionBackground ?? "#f4f4f6";
     const from = reverse ? 0 : 100, to = reverse ? 100 : 0;
     serv.style.transition = "none";
@@ -2088,6 +2102,7 @@ class Component extends DCLogic {
       serv.style.margin = ""; serv.style.zIndex = "";
       serv.style.transform = ""; serv.style.willChange = "";
       serv.style.minHeight = "";
+      serv.classList.remove("zv-serv-anim");
       const sp = document.getElementById("zv-serv-spacer");
       if (sp) sp.style.height = "0px";
       if (reverse) { window.scrollTo(0, z.pinY); this._servCovered = false; }

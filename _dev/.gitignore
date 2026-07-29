@@ -1,6 +1,7 @@
 # Tudo aqui é regenerado a cada execução. Nada disso entra no repositório.
 node_modules/
 trace-*/
+shots-*/
 after-*/
 mfix*/
 mstab-*/
