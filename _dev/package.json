@@ -1,0 +1,15 @@
+{
+  "name": "zanvie-dev",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ambiente de validação da landing page Zanvie: arnês de gestos, baseline de screenshots e probes de diagnóstico.",
+  "type": "commonjs",
+  "scripts": {
+    "serve": "node static-server.js",
+    "harness": "node gesture-harness.js",
+    "shots": "node baseline-shots.js"
+  },
+  "dependencies": {
+    "playwright": "1.61.1"
+  }
+}
