@@ -8,6 +8,14 @@ const OUT = process.argv[2] || 'trace';
 const URL = 'http://localhost:8752/index.html';
 const VP = { width: 1440, height: 900 };
 
+// Overrides de props por variavel de ambiente, para rodar a suite inteira numa
+// configuracao diferente sem tocar no site:
+//   ZV_PROPS='{"timelineFreeScroll":true}' node gesture-harness.js saida
+// Usa __dcSetProps, o canal oficial (support.js:1670). Mutar inst.props direto
+// nao funciona: __userProps() devolve um objeto novo e a mutacao e descartada no
+// proximo re-render. Desligado por padrao -- sem a variavel, nada muda.
+const PROPS = process.env.ZV_PROPS ? JSON.parse(process.env.ZV_PROPS) : null;
+
 // Instala window.__zv com a instancia e um amostrador por rAF que registra
 // somente TRANSICOES (nao todo frame), para o traco ser robusto a jitter.
 const PROBE = () => {
@@ -123,7 +131,26 @@ async function newPage(browser, opts = {}) {
   page.__errors = errors;
   await page.goto(URL, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1600);
+  if (PROPS) {
+    // Antes do PROBE: o override dispara re-render, e queremos amostrar ja na
+    // configuracao final.
+    await page.evaluate((p) => window.__dcSetProps(window.__dcRootName(), p), PROPS);
+    await page.waitForTimeout(500);
+  }
   await page.evaluate(PROBE);
+  // Confirma que o override pegou de fato -- prop silenciosamente descartada
+  // invalidaria a corrida inteira sem dar sinal.
+  if (PROPS) {
+    const vivo = await page.evaluate((ks) => {
+      const o = {}; for (const k of ks) o[k] = window.__zv.inst.props[k]; return o;
+    }, Object.keys(PROPS));
+    for (const k of Object.keys(PROPS)) {
+      if (JSON.stringify(vivo[k]) !== JSON.stringify(PROPS[k])) {
+        throw new Error('override de prop nao pegou: ' + k + ' esperado ' +
+          JSON.stringify(PROPS[k]) + ', lido ' + JSON.stringify(vivo[k]));
+      }
+    }
+  }
   return page;
 }
 

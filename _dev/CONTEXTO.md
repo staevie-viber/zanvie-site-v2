@@ -175,6 +175,21 @@ Ver `_dev/README.md` para instruções de execução.
 - **Isolamento**: além do baseline, compare contra as capturas do commit
   imediatamente anterior. Separa o que a mudança atual causou do ruído herdado.
 
+### Ruído conhecido: o cenário `N`
+
+`N` alterna entre `globeStates [1,2]` e `[0,1,2]` **sem nenhuma mudança de
+código** — é corrida entre o início da amostragem por rAF e o `_setGlobeState(1)`
+do próprio setup do cenário, então o `0` inicial é capturado ou não. É do probe,
+não do site.
+
+**Provado que precede a Etapa 1**: 5 execuções no build com a mudança (3× `[1,2]`,
+2× `[0,1,2]`) e 5 num worktree de `8f3e3f1` sem ela (4× `[1,2]`, 1× `[0,1,2]`).
+
+Ao comparar, **ignore o primeiro elemento de `globeStates` em `N`**. Os campos
+estáveis e que valem como asserção são `maxScrollY`, `inconsistent`,
+`finalGlobeState` e `restingAt`. Estabilizar o probe é tarefa separada, do
+arnês — não misturar com mudanças no site.
+
 ### Aviso sobre o baseline mobile
 
 O `baseline/` mobile está **defasado** desde o commit da navbar (`ff1a730`).
@@ -194,6 +209,42 @@ Confirme sempre em aparelho real:
 ---
 
 ## Trabalho em andamento
+
+### Scroll livre no lugar do snap — Etapa 1 de 5 concluída
+
+Plano de 5 etapas aprovado para trocar o scroll-snap por scroll livre entre
+Globo→Timeline e Timeline→Serviços, mantendo a cobertura visual.
+
+**Achado que reenquadrou a tarefa:** a sobreposição da Timeline sobre o Globo
+**já é dirigida por scroll e não depende do snap** — o `#globo` é
+`position: sticky; top: 0` e `_layoutStack` dá altura extra ao `#zv-globe-wrap`
+com `marginTop` negativo no `#zv-secoes-wrap`. O snap só fazia o scroll *pular*
+de `gTop` a `wTop`. Metade do pedido se resolve desligando o snap; só Serviços
+exige construção.
+
+**Etapa 1 — FEITA.** Tweak `timelineFreeScroll` (booleano, **default `false`**):
+faz os 4 ramos destravados de snap retornarem cedo e neutraliza o `_snapGo` de
+`_releaseGlobeSeq` nos dois sentidos. **Nada foi removido** — com o tweak em
+`false` o comportamento é bit a bit o anterior (validado: `problema: 0`,
+`mudaram: 0` contra `8f3e3f1`). Em `_onKeySnap` o corte é mais abaixo que nos
+outros três handlers, porque ali o trecho de Serviços está entremeado com o de
+snap e cortar antes desligaria Serviços no teclado.
+
+**Etapas 2-5 pendentes**, na ordem do mapa:
+2. O "gesto morto" pós-liberação — o gesto que esgota a sequência é
+   `preventDefault`-ado, então destravar não move a página e é preciso um segundo
+   gesto. O `_snapGo` mascarava isso. Decidir depois de sentir no aparelho.
+3. **Serviços por `position: sticky`** — a mais arriscada: mexe em
+   `_layoutStack`, que alimenta `wTop`, âncora do clamp de `gTop` e da fronteira
+   do `_onScroll`. Com sticky, **P3 deixa de ser bug a corrigir e passa a ser bug
+   a deletar** (some `_animServ`, `_servZone`, `_reconcileServ`,
+   `_servTransition`, `_servCovered`, o spacer) — e a correção de P2 vira código
+   morto, porque não há mais camada fixa animando.
+4. Remover o código morto do snap e de `_animServ`. Commit puramente subtrativo.
+5. Arnês: recalibrar `A`/`G`/`K`/`L`/`T` e criar cenários para o scroll livre e
+   para a cobertura de Serviços com inércia.
+
+Testar em aparelho real **entre todas** as etapas.
 
 ### Diagnóstico concluído: transição Timeline → Serviços (3 problemas)
 
@@ -260,6 +311,18 @@ inicial. Nenhum dos commits recentes tocou essas rotinas.
   nesse frame isolado — então o blur não era a causa dele. Candidatos não
   investigados: os 3 slides com `will-change: transform, opacity` sempre
   promovidos, e o `box-shadow` de 60px de raio do `#servicos`.
+- **Engate por cruzamento não reengata partindo exatamente de `gTop`.** Com
+  `timelineFreeScroll` ligado, a liberação da sequência deixa a página repousando
+  **em** `gTop`. O engate exige `prev > gTop` **estrito**
+  (`cruzouSubindo = prev > gTop && y <= gTop`), e `1100 > 1100` é falso — então um
+  gesto para cima a partir dali **não reengata a trava**: o globo reseta para 0
+  pela cláusula de reentrada e a página sobe livre. Antes isso não aparecia porque
+  o `_snapGo` empurrava para `wTop`, e `2070 > 1100` era verdadeiro.
+  **Medido** no cenário `K`. Não é regressão — é consequência direta e esperada
+  da Etapa 1 —, mas **pode precisar de ajuste conforme o teste no aparelho**.
+  Junto com o cenário `M` (onde o scroll nativo faz a cláusula de recuperação
+  travar, proteção *mais* forte), é a face concreta do risco "cláusula de
+  recuperação vs. scroll livre" marcado como alto no mapa.
 - **Pior frame do mobile piorou** com a correção de P2: 31,5ms → 34,9ms
   (consistente em 3 execuções), em troca de +22% de vazão. Aceito na época;
   registrado por não ser ganho puro.
