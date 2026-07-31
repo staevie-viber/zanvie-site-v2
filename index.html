@@ -730,8 +730,15 @@ class Component extends DCLogic {
     // chegam com uma transição em curso são DESCARTADOS (não enfileirados).
     // Esgotada a sequência na direção, libera a página.
     this._lockedStep = (d) => {
-      if (this._snapAnimating) return;
       if (!d) return;
+      // O gesto que ESGOTA a sequência não passa pela janela de bloqueio. No
+      // estado terminal não há transição a disparar — só resta devolver o
+      // scroll —, e descartá-lo custava os 383ms de R inteiros mais um gesto
+      // adicional antes de a Timeline poder subir (medido: gesto a +380ms era
+      // descartado, a +400ms liberava). Gestos que MUDAM de estado continuam
+      // descartados durante a janela, então "um gesto = um estado" fica igual.
+      const terminal = (d > 0 && this._globeState >= 3) || (d < 0 && this._globeState <= 0);
+      if (this._snapAnimating && !terminal) return;
       if (!this._globeStep(d, 0)) this._releaseGlobeSeq(d);
     };
     this._onWheel = (e) => {
