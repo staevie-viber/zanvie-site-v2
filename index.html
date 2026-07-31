@@ -601,7 +601,14 @@ class Component extends DCLogic {
       // TOPO da Timeline encosta na base da viewport — senão a Timeline "espia"
       // por baixo enquanto os estados 0-2 acontecem. Usa innerHeight vivo (não
       // 100vh), então acompanha também a barra de endereço do mobile.
-      const estrTop = s2.getBoundingClientRect().top + sy;
+      // Deriva do WRAP, não do #estrategia. O wrap embrulha só a Timeline e tem
+      // exatamente o mesmo topo (medido: idêntico em 320/360/390/430/1440), mas
+      // não é sticky. Ler o rect do próprio #estrategia devolveria a posição
+      // GRUDADA assim que ele virar sticky, e como offMax alimenta o clamp de
+      // gTop, o ponto de pin da trava se deslocaria — medido: 60,3px em 320px
+      // com globeEntryScrollGap no máximo. É a mesma armadilha que o Globo já
+      // tem documentada acima.
+      const estrTop = wTop;
       const offMax = estrTop - (window.innerHeight || 0);
       if (gTop > offMax) gTop = Math.max(0, offMax);
       if (gTop > wTop - 40) gTop = Math.max(0, wTop - 40);
