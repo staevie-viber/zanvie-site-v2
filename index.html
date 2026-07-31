@@ -447,10 +447,16 @@ class Component extends DCLogic {
     // de listeners dependia de quando window.THREE ficava disponível.
     this._onResize = () => {
       this._applyViewportUnit();
-      if (this._layoutStack) this._layoutStack();
       if (this._globeResize) this._globeResize();
       this._applyStarsTweaks();
       this._layoutTimeline();
+      // DEPOIS de _layoutTimeline: o empilhamento mede a altura da Timeline e a
+      // posição do último item, e é _layoutTimeline quem troca entre coluna e
+      // linha no breakpoint de 1024px. Medido ao cruzar 1024 com a ordem antiga:
+      // _layoutStack lia dir=row/eh=1164 quando o correto era column/eh=1386, e
+      // o ponto de pin saía 222px cedo demais. _globeResize não depende daqui —
+      // ele lê #zv-globe-stage e chama seu próprio _applyGlobeSectionHeight.
+      if (this._layoutStack) this._layoutStack();
       this._applyResponsiveHeader();
       this._applyContactResponsive();
       this._applyFaqTweaks();
@@ -566,10 +572,31 @@ class Component extends DCLogic {
       // A pintura ja esta correta sem tocar em z-index: #zv-stack-wrap e z:1 e
       // #servicos e z:2, no mesmo contexto de #zv-secoes-wrap.
       if (this._freeServ()) {
-        const riseS = window.innerHeight || 0;
+        // A Timeline é mais alta que a viewport no mobile (medido: 1386 contra
+        // 800). Com top:0 ela grudaria assim que o topo tocasse 0, e os 586px
+        // de baixo — onde estão os itens 4 e 5 — nunca apareceriam. Então o pin
+        // é ADIADO até o último item estar inteiro na tela, com folga de respiro.
+        const vh = window.innerHeight || 0;
+        const eh = s2.offsetHeight;
+        const base = s2.getBoundingClientRect().top;
+        let ultimoFim = eh;
+        const itens = document.querySelectorAll(".zv-tl-item");
+        if (itens.length) {
+          ultimoFim = 0;
+          itens.forEach((el) => {
+            const b = el.getBoundingClientRect().bottom - base;
+            if (b > ultimoFim) ultimoFim = b;
+          });
+        }
+        const P = Math.max(0, Math.min(eh - vh, Math.ceil(ultimoFim + 24 - vh)));
+        // riseS não é escolha, é imposto pela geometria: o +riseS do wrap e o
+        // -riseS de Servicos se cancelam, então o topo de Servicos no documento
+        // é sempre estrBottom. No instante do pin ele está em (eh - P), logo
+        // precisa percorrer exatamente isso para cobrir a viewport por completo.
+        const riseS = eh - P;
         s2.style.position = "sticky";
-        s2.style.top = "0px";
-        wrap.style.height = (s2.offsetHeight + riseS) + "px";
+        s2.style.top = (-P) + "px";
+        wrap.style.height = (eh + riseS) + "px";
         s3.style.marginTop = (-riseS) + "px";
       } else {
         // Reset simetrico. "relative" e nao "" porque #estrategia declara
