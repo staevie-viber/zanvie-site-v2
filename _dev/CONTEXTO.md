@@ -101,6 +101,32 @@ desenhada tem ~310px de diâmetro. **Medir o bounding box do canvas dá erro de
 ~1240px.** Calcule a esfera pela projeção:
 `r = tan(asin(S/d)) / tan(fov/2) * (H/2)`, aplicando o transform CSS.
 
+### Nem todo tweak tem efeito imediato: `_layoutStack` não roda em mudança de prop
+
+`_applyAllTweaks` (chamado por `componentDidUpdate`, ou seja, a cada mudança de
+prop ou state) **não chama `_layoutStack`**. Este só roda em três lugares:
+
+- no `componentDidMount`
+- no despachante único de resize
+- pelo `ResizeObserver` que observa `#estrategia` e `#globo`
+
+**Consequência:** qualquer tweak que altere geometria de empilhamento — hoje,
+`servicosFreeScroll` — **não tem efeito ao ser virado no editor**. Só passa a
+valer depois de um resize ou de um reload. Tweaks lidos ao vivo dentro dos
+handlers (como `timelineFreeScroll`) não sofrem disso.
+
+Para testar esse tipo de tweak, o caminho é mudar o `default` no `data-props` e
+commitar — que é como a Etapa 1 foi validada em aparelho.
+
+Correção disponível, **não aplicada** (é uma decisão de custo): acrescentar
+`if (this._layoutStack) this._layoutStack();` ao `_applyAllTweaks`. Torna o tweak
+vivo, mas força um layout a cada re-render — e há re-render em toda troca de
+`navHidden`/`activeSection`, que o `_onScroll` dispara.
+
+Ao validar tweaks de geometria com `__dcSetProps`, chame `_layoutStack()`
+manualmente depois; senão a medição é a do layout antigo e passa despercebido.
+O `probe-geo-ab.js` já faz isso.
+
 ### Profiling que se contamina
 
 Ler `getBoundingClientRect` dentro do loop de profiling infla os números

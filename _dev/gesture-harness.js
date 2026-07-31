@@ -136,6 +136,23 @@ async function newPage(browser, opts = {}) {
     // configuracao final.
     await page.evaluate((p) => window.__dcSetProps(window.__dcRootName(), p), PROPS);
     await page.waitForTimeout(500);
+    // _layoutStack NAO e chamado por _applyAllTweaks -- so no mount, no resize e
+    // pelo ResizeObserver. Sem este empurrao, um tweak de GEOMETRIA (ex.:
+    // servicosFreeScroll) ficaria setado mas sem efeito, e a corrida mediria o
+    // layout antigo achando que testou o novo. Em producao nao ocorre: o default
+    // ja esta no data-props quando _layoutStack roda no mount.
+    await page.evaluate(() => {
+      const root = document.getElementById('dc-root');
+      const key = Object.keys(root).find(k => k.startsWith('__reactContainer$') || k.startsWith('__reactFiber$'));
+      const seen = new Set(); const stack = [root[key]];
+      while (stack.length) {
+        const f = stack.pop(); if (!f || seen.has(f)) continue; seen.add(f);
+        const lg = f.stateNode && typeof f.stateNode === 'object' ? f.stateNode.logic : null;
+        if (lg && '_globeState' in lg) { if (lg._layoutStack) lg._layoutStack(); return; }
+        if (f.child) stack.push(f.child); if (f.sibling) stack.push(f.sibling);
+      }
+    });
+    await page.waitForTimeout(400);
   }
   await page.evaluate(PROBE);
   // Confirma que o override pegou de fato -- prop silenciosamente descartada
