@@ -552,7 +552,17 @@ class Component extends DCLogic {
           // também sobrevive a saltos grandes de um fling, que podem pular a
           // vizinhança de gTop inteira num único evento de scroll.
           const cruzouDescendo = prev < gTop && y >= gTop;
-          const cruzouSubindo = prev > gTop && y <= gTop;
+          // SUBINDO, exige que o salto do evento seja pequeno. O que discrimina
+          // não é de que distância o usuário veio, e sim o tamanho do pulo no
+          // próprio evento: com scroll gradual o frame anterior está sempre logo
+          // acima do pin, então prev - gTop é o deslocamento de UM frame.
+          // Medido nas 4 larguras mobile: volta da Timeline dá 80px mesmo vindo
+          // de 840px de distância; um salto único (navegação, frame perdido)
+          // dava 400px e puxava o usuário de volta ao pin no estado 3.
+          // O limiar é relativo à viewport de propósito — o limiar ABSOLUTO do
+          // navHidden foi exatamente o que quebrou quando a Hero encurtou.
+          const saltoMax = (window.innerHeight || 0) * 0.4;
+          const cruzouSubindo = prev > gTop && y <= gTop && (prev - gTop) < saltoMax;
           if (cruzouDescendo || cruzouSubindo) {
             // Estado inicial pela DIREÇÃO da travessia — antes dependia de qual
             // caminho tivesse escrito _globeState por último, e era isso que

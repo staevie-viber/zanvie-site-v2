@@ -323,6 +323,16 @@ inicial. Nenhum dos commits recentes tocou essas rotinas.
   "rápido" gira mais devagar que o normal. Investigação iniciada e interrompida
   a pedido do usuário; nenhuma alteração feita. Provável ajuste só de slider.
 - **Baseline mobile defasado** desde `ff1a730` (ver acima).
+- **O rearme `Math.abs(y - gTop) > 80` ainda é ABSOLUTO.** Mesma classe do
+  limiar do `navHidden`, que era `innerHeight - 72` e quebrou quando a Hero
+  encurtou: o Globo subiu e o limiar ficou parado, invertendo a ordem dos
+  eventos (medido: a 0,85 o header sumia 48px **depois** de o Globo encher a
+  tela, quando deveria sumir 72px antes). O `navHidden` já foi corrigido para
+  derivar do fim da Hero; **este rearme não**. Ele decide quando
+  `_globeReleased` volta a `false`, ou seja "o usuário se afastou o bastante do
+  pin". Não causou nenhum sintoma até agora e por isso ficou de fora, mas é o
+  último valor absoluto da região. Se for mexer, o análogo é torná-lo relativo à
+  viewport, como foi feito no limiar de reengate subindo (0,4 × viewport).
 - **P1 — causa provável identificada, sem correção.** É o
   `border-top: 1px solid rgba(255,255,255,0.6)` que o `#servicos` tem **por
   design** na linha 187: 60% de branco encostando no preto da Timeline.

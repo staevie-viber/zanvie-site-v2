@@ -747,8 +747,20 @@ const scenarios = {
     const s = await page.evaluate(snapshot);
     s.reentradas = linhas;
     s.gTop = Math.round(gTop);
-    // todas devem reengatar no estado 3, ancoradas em gTop
-    s.reentradaConsistente = linhas.every(l => l.travado && l.estado === 3 && Math.abs(l.y - gTop) < 3);
+    // Regra nova: reengata subindo SO quando o salto do EVENTO e pequeno.
+    // Atencao ao que e o salto: o scrollTo(gTop+off) intermediario dispara seu
+    // proprio evento, entao no cruzamento prev = gTop+off e o salto medido e
+    // OFF, nao off+120. Com o limiar em 0,4 x viewport (360 em 900), os offs de
+    // 60, 150 e 300 reengatam e o de 600 nao -- 600px num unico evento e
+    // teleporte, nao gesto.
+    const saltoMax = 900 * 0.4;
+    s.saltos = [60, 150, 300, 600];
+    s.reentradaConsistente = linhas.every((l, k) => {
+      const perto = s.saltos[k] < saltoMax;
+      return perto
+        ? (l.travado && l.estado === 3 && Math.abs(l.y - gTop) < 3)
+        : (!l.travado && l.estado !== 3);
+    });
     s.errors = page.__errors; await page.context().close(); return s;
   },
 
@@ -815,6 +827,264 @@ const scenarios = {
     s.gTop = Math.round(gTop); s.noPin = noPin; s.aposEsgotar = apos; s.aposSubir = fim;
     // depois de esgotar para cima a pagina tem de SUBIR, nao ficar presa no pin
     s.subiuDeFato = fim.y < apos.y - 10 && !fim.travado;
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // X: _lastScrollY envenenado durante a TRAVA.
+  // _onScroll captura y no topo do handler, a rede de seguranca devolve a
+  // pagina para _lockY, mas _lastScrollY grava o y NAO corrigido. Se um fling
+  // escapou por um frame, prev fica acima de gTop mesmo a pagina nunca tendo
+  // repousado ali -- e a proxima subida dispara cruzouSubindo e joga no estado 3.
+  //
+  // Reproduz o escape abrindo o overflow por um instante, que e o que o
+  // compositor do iOS faz quando ja tinha o gesto em voo. Nao injeta
+  // _lastScrollY na mao: deixa o proprio _onScroll grava-lo, para que a
+  // correcao (gravar _lockY quando travado) mude o resultado de verdade.
+  async X(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop] = st;
+    await page.evaluate((y) => window.scrollTo(0, y - 150), gTop);
+    await page.waitForTimeout(400);
+    await page.mouse.wheel(0, 300);            // cruza o pin e trava
+    await page.waitForTimeout(800);
+    const noPin = await page.evaluate(() => ({
+      travado: !!window.__zv.inst._scrollLocked,
+      estado: window.__zv.inst._globeState,
+      y: Math.round(window.scrollY),
+    }));
+    // ESCAPE: uma fresta de um frame em que o documento volta a rolar
+    const ov = await page.evaluate(() => {
+      const de = document.documentElement;
+      const v = de.style.overflow;
+      de.style.overflow = "";
+      return v;
+    });
+    await page.evaluate((g) => window.scrollTo(0, g + 120), gTop);
+    await page.waitForTimeout(160);          // deixa o evento de scroll ser entregue
+    await page.evaluate((v) => { document.documentElement.style.overflow = v; }, ov);
+    await page.waitForTimeout(400);
+    const posEscape = await page.evaluate(() => ({
+      y: Math.round(window.scrollY),
+      lastScrollY: Math.round(window.__zv.inst._lastScrollY),
+      travado: !!window.__zv.inst._scrollLocked,
+    }));
+    // agora sobe: do estado 0 o primeiro gesto libera, os seguintes rolam
+    for (let k = 0; k < 6; k++) { await page.mouse.wheel(0, -400); await page.waitForTimeout(420); }
+    const fim = await page.evaluate(() => ({
+      y: Math.round(window.scrollY),
+      travado: !!window.__zv.inst._scrollLocked,
+      estado: window.__zv.inst._globeState,
+    }));
+    const s = await page.evaluate(snapshot);
+    s.gTop = Math.round(gTop); s.noPin = noPin; s.posEscape = posEscape; s.aposSubir = fim;
+    // _lastScrollY nao pode guardar uma posicao onde a pagina nunca repousou
+    s.lastScrollYlimpo = Math.abs(posEscape.lastScrollY - gTop) < 3;
+    // e a subida nao pode terminar travada no estado 3
+    s.subiuSemVoltarAo3 = !(fim.travado && fim.estado === 3);
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // Y: um UNICO evento de scroll coalescido que cruza gTop para cima.
+  // E o que o ultimo frame de _navGo("inicio") produz: a pagina salta de um
+  // ponto abaixo do pin direto para 0, e o evento chega depois de _endAnim ter
+  // liberado o token -- entao o engate por cruzamento esta vivo e puxa de volta
+  // para gTop. Reproduzido sem depender de frames perdidos: um scrollTo unico.
+  async Y(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop] = st;
+    // libera a sequencia primeiro, senao a trava captura a descida
+    await page.evaluate(() => window.scrollTo(0, window.__zv.inst._snapStops()[0]));
+    await page.waitForTimeout(700);
+    await page.evaluate(() => window.__zv.inst._releaseGlobeSeq(1));
+    await page.waitForTimeout(1200);
+    // repousa ABAIXO do pin com a sequencia CONCLUIDA (estado 3). Com estado < 3
+    // a clausula de recuperacao reancoraria e o cenario nem chegaria a montar.
+    await page.evaluate(() => window.__zv.inst._setGlobeState(3));
+    await page.evaluate((y) => window.scrollTo(0, y + 400), gTop);
+    await page.waitForTimeout(800);
+    const antes = await page.evaluate(() => ({
+      y: Math.round(window.scrollY),
+      last: Math.round(window.__zv.inst._lastScrollY),
+      released: !!window.__zv.inst._globeReleased,
+      travado: !!window.__zv.inst._scrollLocked,
+    }));
+    // o salto unico ate a Hero, como o ultimo frame da navegacao
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(900);
+    const fim = await page.evaluate(() => ({
+      y: Math.round(window.scrollY),
+      travado: !!window.__zv.inst._scrollLocked,
+      estado: window.__zv.inst._globeState,
+    }));
+    const s = await page.evaluate(snapshot);
+    s.gTop = Math.round(gTop); s.antesDoSalto = antes; s.aposSalto = fim;
+    // tem de repousar na Hero, nao ser puxado de volta para o pin
+    s.chegouNaHero = fim.y < 50 && !fim.travado;
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // ===== Fluxo completo da sequencia, nos dois sentidos =====
+
+  // Z1: subida a partir de CADA estagio. De 0 sai direto; de 1 passa pelo 0; de
+  // 2 pelo 1 e 0; de 3 pelo 2, 1 e 0. Nunca pular estagio, nunca voltar ao 3.
+  async Z1(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop] = st;
+    const casos = [];
+    for (const partida of [0, 1, 2, 3]) {
+      await page.evaluate((y) => window.scrollTo(0, y - 150), gTop);
+      await page.waitForTimeout(400);
+      await page.mouse.wheel(0, 300);                    // cruza o pin, trava no estado 0
+      await page.waitForTimeout(800);
+      for (let k = 0; k < partida; k++) { await page.mouse.wheel(0, 400); await page.waitForTimeout(500); }
+      const inicio = await page.evaluate(() => window.__zv.inst._globeState);
+      await page.evaluate(() => { window.__zv.__seq = []; });
+      await page.evaluate(() => {
+        const i = window.__zv.inst;
+        if (!window.__zv.__hook) {
+          window.__zv.__hook = true;
+          const o = i._setGlobeState.bind(i);
+          i._setGlobeState = (n) => { (window.__zv.__seq || (window.__zv.__seq = [])).push(n); return o(n); };
+        }
+      });
+      for (let k = 0; k < 8; k++) { await page.mouse.wheel(0, -400); await page.waitForTimeout(420); }
+      const fim = await page.evaluate(() => ({
+        y: Math.round(window.scrollY), travado: !!window.__zv.inst._scrollLocked,
+        estado: window.__zv.inst._globeState, seq: (window.__zv.__seq || []).slice(),
+      }));
+      const esperado = []; for (let n = partida - 1; n >= 0; n--) esperado.push(n);
+      casos.push({
+        partida, inicio, seq: fim.seq, esperado, y: fim.y, travado: fim.travado, estado: fim.estado,
+        ok: JSON.stringify(fim.seq) === JSON.stringify(esperado) && fim.y < gTop - 50 && !fim.travado,
+      });
+    }
+    const s = await page.evaluate(snapshot);
+    s.gTop = Math.round(gTop); s.subidas = casos;
+    s.todasSubidasOk = casos.every(c => c.ok);
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // Z2: volta da Timeline. Deve reengatar no estado 3 e descer 3 > 2 > 1 > 0
+  // ate sair para a Hero, sem pular estagio.
+  async Z2(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop, wTop] = st;
+    await page.evaluate(() => window.scrollTo(0, window.__zv.inst._snapStops()[0]));
+    await page.waitForTimeout(700);
+    // percorre a sequencia ATE O FIM antes de liberar: com estado < 3 a clausula
+    // de recuperacao reancora na volta e o cruzamento nem chega a ser avaliado.
+    await page.evaluate(() => window.__zv.inst._setGlobeState(3));
+    await page.evaluate(() => window.__zv.inst._releaseGlobeSeq(1));
+    await page.waitForTimeout(1200);
+    await page.evaluate((y) => window.scrollTo(0, y + 150), wTop);   // dentro da Timeline
+    await page.waitForTimeout(800);
+    await page.evaluate(() => {
+      const i = window.__zv.inst;
+      window.__zv.__seq = [];
+      if (!window.__zv.__hook) {
+        window.__zv.__hook = true;
+        const o = i._setGlobeState.bind(i);
+        i._setGlobeState = (n) => { (window.__zv.__seq || (window.__zv.__seq = [])).push(n); return o(n); };
+      }
+    });
+    // sobe gradualmente: passos pequenos, como um dedo, ate cruzar o pin
+    for (let k = 0; k < 12; k++) { await page.mouse.wheel(0, -160); await page.waitForTimeout(140); }
+    await page.waitForTimeout(600);
+    const noPin = await page.evaluate(() => ({
+      y: Math.round(window.scrollY), travado: !!window.__zv.inst._scrollLocked,
+      estado: window.__zv.inst._globeState, seq: (window.__zv.__seq || []).slice(),
+    }));
+    // e agora percorre a sequencia para cima ate sair
+    for (let k = 0; k < 8; k++) { await page.mouse.wheel(0, -400); await page.waitForTimeout(420); }
+    const fim = await page.evaluate(() => ({
+      y: Math.round(window.scrollY), travado: !!window.__zv.inst._scrollLocked,
+      estado: window.__zv.inst._globeState, seq: (window.__zv.__seq || []).slice(),
+    }));
+    const s = await page.evaluate(snapshot);
+    s.gTop = Math.round(gTop); s.wTop = Math.round(wTop);
+    s.aoCruzar = noPin; s.aoFim = fim;
+    // Amostrar o estado ao fim dos 12 passos nao prova nada: a sequencia ja
+    // terminou. Quem prova o reengate e o PRIMEIRO estado observado.
+    s.reengatouNo3 = noPin.seq.length > 0 && noPin.seq[0] === 3;
+    // a sequencia completa vista: entra em 3 e desce ate 0
+    s.percorreuTudo = JSON.stringify(fim.seq) === JSON.stringify([3, 2, 1, 0]);
+    s.saiuParaHero = fim.y < gTop - 50 && !fim.travado;
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // Z3: "Inicio" na navbar a partir do rodape. Atalho, nao scroll: vai direto a
+  // Hero, sem reengatar a trava e sem percorrer estagios.
+  async Z3(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop] = st;
+    await page.evaluate(() => window.scrollTo(0, window.__zv.inst._snapStops()[0]));
+    await page.waitForTimeout(700);
+    await page.evaluate(() => window.__zv.inst._releaseGlobeSeq(1));
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(1400);
+    const antes = await page.evaluate(() => Math.round(window.scrollY));
+    await page.evaluate(() => {
+      const i = window.__zv.inst;
+      window.__zv.__seq = [];
+      if (!window.__zv.__hook) {
+        window.__zv.__hook = true;
+        const o = i._setGlobeState.bind(i);
+        i._setGlobeState = (n) => { (window.__zv.__seq || (window.__zv.__seq = [])).push(n); return o(n); };
+      }
+    });
+    await page.click('#zv-pill-1');
+    await page.waitForTimeout(3200);
+    const fim = await page.evaluate(() => ({
+      y: Math.round(window.scrollY), travado: !!window.__zv.inst._scrollLocked,
+      estado: window.__zv.inst._globeState, seq: (window.__zv.__seq || []).slice(),
+    }));
+    const s = await page.evaluate(snapshot);
+    s.gTop = Math.round(gTop); s.doRodape = antes; s.aposClique = fim;
+    s.chegouNaHero = fim.y < 50 && !fim.travado;
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // Z4: ciclo descer > subir > descer. A segunda descida tem de RECOMECAR do
+  // estado 0, nao retomar de onde parou. Prova por medicao o que antes eu so
+  // afirmava: a condicao de proximidade entra apenas no cruzamento SUBINDO, e
+  // o cruzouDescendo, que e quem zera o estado, fica intacto.
+  async Z4(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop] = st;
+    const marcos = [];
+    const estado = () => page.evaluate(() => ({
+      estado: window.__zv.inst._globeState,
+      travado: !!window.__zv.inst._scrollLocked,
+      y: Math.round(window.scrollY),
+    }));
+    // 1a descida: cruza o pin e avanca ate o estado 2
+    await page.evaluate((y) => window.scrollTo(0, y - 150), gTop);
+    await page.waitForTimeout(400);
+    await page.mouse.wheel(0, 300);
+    await page.waitForTimeout(800);
+    marcos.push({ passo: '1a descida, ao travar', ...(await estado()) });
+    for (let k = 0; k < 2; k++) { await page.mouse.wheel(0, 400); await page.waitForTimeout(500); }
+    marcos.push({ passo: '1a descida, apos 2 gestos', ...(await estado()) });
+    // sobe ate sair para a Hero
+    for (let k = 0; k < 8; k++) { await page.mouse.wheel(0, -400); await page.waitForTimeout(420); }
+    marcos.push({ passo: 'apos subir', ...(await estado()) });
+    // 2a descida: tem de recomecar do 0
+    await page.evaluate((y) => window.scrollTo(0, y - 150), gTop);
+    await page.waitForTimeout(500);
+    await page.mouse.wheel(0, 300);
+    await page.waitForTimeout(900);
+    const segunda = await estado();
+    marcos.push({ passo: '2a descida, ao travar', ...segunda });
+    const s = await page.evaluate(snapshot);
+    s.gTop = Math.round(gTop); s.marcos = marcos;
+    s.recomecouDoZero = segunda.travado && segunda.estado === 0 && Math.abs(segunda.y - gTop) < 3;
     s.errors = page.__errors; await page.context().close(); return s;
   },
 };
