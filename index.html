@@ -21,6 +21,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&amp;display=swap">
   <style>
     html { scroll-behavior: auto; }
+    /* Mata o rubber-band no topo, que fazia a foto da Hero deslizar junto com o
+       documento no gesto de puxar para atualizar. "contain" impede o overscroll
+       se propagar sem desabilitar o pull-to-refresh nativo -- "none" mataria os
+       dois. Base em FOLHA DE ESTILO de proposito: a trava do Globo escreve
+       overscroll-behavior inline e reseta com "", e sem uma regra para cair o
+       reset devolveria o padrao "auto" e o rubber-band voltaria. Com a base
+       aqui, "" volta para "contain" sozinho. */
+    html { overscroll-behavior-y: contain; }
     body { margin: 0; background: var(--black-900); }
     a { color: var(--purple-500); text-decoration: none; }
     a:hover { color: var(--orange-500); }
