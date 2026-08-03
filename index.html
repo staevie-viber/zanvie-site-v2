@@ -487,7 +487,18 @@ class Component extends DCLogic {
     window.addEventListener("resize", this._onResize);
     this._onScroll = () => {
       const nav = 72;
-      const hide = window.scrollY > window.innerHeight - nav;
+      // O limiar acompanha o FIM DA HERO, não a altura da viewport. Enquanto a
+      // Hero media exatamente 100vh os dois coincidiam, e o header sumia 72px
+      // antes de o Globo encher a tela. Com heroHeightScale o Globo subiu e o
+      // limiar absoluto (innerHeight - 72 = 728) ficou parado: medido em 390x800,
+      // a 0,85 o header passou a sumir 48px DEPOIS do Globo chegar, e a 0,92
+      // apenas 8px antes. Derivando do fim da Hero, a antecipação de 72px volta
+      // a valer para qualquer altura.
+      const heroEl = document.getElementById("inicio");
+      const heroFim = heroEl
+        ? (heroEl.getBoundingClientRect().top + window.scrollY + heroEl.offsetHeight)
+        : (window.innerHeight || 0);
+      const hide = window.scrollY > heroFim - nav;
       let active = "inicio";
       for (const pair of [["inicio", "inicio"], ["estrategia", "estrategia"], ["servicos", "servicos"], ["zv-cta", "contato"]]) {
         const el = document.getElementById(pair[0]);
