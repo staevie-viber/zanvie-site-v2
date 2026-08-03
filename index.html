@@ -1502,6 +1502,13 @@ class Component extends DCLogic {
 
   _drawContinents(color) {
     if (!this._globe) return;
+    // Guarda a ULTIMA cor pedida e pinta sempre a partir dela, nunca do
+    // parametro capturado na closure. Sem isto, uma chamada que chegasse
+    // enquanto a malha ainda estava sendo baixada caia no "if (_landLoading)
+    // return" abaixo e a cor era descartada em silencio -- e, ao resolver o
+    // fetch, o paint usava a cor da PRIMEIRA chamada. Qualquer troca de tweak
+    // durante o carregamento era perdida.
+    this._contColor = color;
     const cv = this._globe.texCanvas, ctx = cv.getContext("2d");
     const paint = () => {
       ctx.clearRect(0, 0, cv.width, cv.height);
@@ -1509,7 +1516,7 @@ class Component extends DCLogic {
       const proj = window.d3.geoEquirectangular()
         .scale(cv.width / (2 * Math.PI)).translate([cv.width / 2, cv.height / 2]);
       const path = window.d3.geoPath(proj, ctx);
-      ctx.fillStyle = color;
+      ctx.fillStyle = this._contColor;
       ctx.beginPath();
       path(this._landFeatures);
       ctx.fill();
