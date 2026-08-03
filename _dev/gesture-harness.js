@@ -714,6 +714,109 @@ const scenarios = {
     const s = await page.evaluate(snapshot);
     s.errors = page.__errors; await page.context().close(); return s;
   },
+
+  // ===== Cenarios de ANCORAGEM (geometria da Hero x trava do Globo) =====
+  // Nenhum dos 21 anteriores cobria isto: K chega perto ("descer tudo, liberar,
+  // voltar subindo") mas nao afirma o ESTADO de reentrada, e T cobre o
+  // esgotamento, nao a subida.
+
+  // U: reentrada por baixo do pin. Subindo de qualquer ponto entre gTop e wTop,
+  // o cruzamento para cima reengata a trava e assume o estado 3 (o ultimo).
+  // Comportamento PROJETADO, nao defeito -- este cenario existe para travar essa
+  // semantica: se um dia ela mudar, tem de ser por decisao explicita.
+  async U(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop] = st;
+    const linhas = [];
+    for (const off of [60, 150, 300, 600]) {
+      await page.evaluate(() => {
+        const i = window.__zv.inst;
+        i._unlockScroll(); i._globeReleased = true; i._setGlobeState(3);
+      });
+      await page.evaluate((y) => window.scrollTo(0, y), gTop + off);
+      await page.waitForTimeout(500);
+      await page.evaluate((y) => window.scrollTo(0, y), gTop - 120);
+      await page.waitForTimeout(600);
+      linhas.push(await page.evaluate(() => ({
+        travado: !!window.__zv.inst._scrollLocked,
+        estado: window.__zv.inst._globeState,
+        y: Math.round(window.scrollY),
+      })));
+    }
+    const s = await page.evaluate(snapshot);
+    s.reentradas = linhas;
+    s.gTop = Math.round(gTop);
+    // todas devem reengatar no estado 3, ancoradas em gTop
+    s.reentradaConsistente = linhas.every(l => l.travado && l.estado === 3 && Math.abs(l.y - gTop) < 3);
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // V: alinhamento entre o limiar do navHidden e o topo do Globo. O limiar era
+  // absoluto (innerHeight - 72) e ficou para tras quando a Hero encurtou: a
+  // 0,85 o header sumia 48px DEPOIS de o Globo encher a tela. Deve sumir ANTES,
+  // com folga proxima de 72px.
+  async V(browser) {
+    const page = await newPage(browser);
+    const r = await page.evaluate(async () => {
+      const hero = document.getElementById('inicio');
+      // fim da Hero medido no topo da pagina: o Globo e sticky e, uma vez
+      // grudado, o rect dele devolve a posicao GRUDADA, nao a de fluxo.
+      window.scrollTo(0, 0);
+      await new Promise(r2 => setTimeout(r2, 120));
+      const heroFim = Math.round(hero.getBoundingClientRect().top + window.scrollY + hero.offsetHeight);
+      const gTop = Math.round(window.__zv.inst._snapStops()[0]);
+      const espera = (ms) => new Promise(r2 => setTimeout(r2, ms));
+      let yHeader = null;
+      for (let y = 0; y <= gTop + 40; y += 4) {
+        window.scrollTo(0, y); await espera(8);
+        if (yHeader === null && window.__zv.inst.state.navHidden) { yHeader = y; break; }
+      }
+      return { heroFim, gTop, yHeader };
+    });
+    const s = await page.evaluate(snapshot);
+    s.heroFim = r.heroFim; s.yHeaderSome = r.yHeader; s.gTopMedido = r.gTop;
+    s.antecipacao = r.yHeader === null ? null : r.heroFim - r.yHeader;
+    // o header tem de sumir ANTES do fim da Hero, com folga entre 40 e 110px
+    s.antecipacaoOk = s.antecipacao !== null && s.antecipacao >= 40 && s.antecipacao <= 110;
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
+
+  // W: subida a partir de EXATAMENTE gTop. O engate exige prev > gTop estrito,
+  // entao repousando no ponto de pin a comparacao e falsa e a trava nao
+  // reengata -- a pagina precisa subir livre. Este cenario existe para provar
+  // que ela sobe de fato, e nao fica presa.
+  async W(browser) {
+    const page = await newPage(browser);
+    const st = await page.evaluate(() => window.__zv.inst._snapStops());
+    const [gTop] = st;
+    // chega ao pin pelo cruzamento normal e esgota a sequencia para cima
+    await page.evaluate((y) => window.scrollTo(0, y - 150), gTop);
+    await page.waitForTimeout(400);
+    await page.evaluate((y) => window.scrollTo(0, y + 30), gTop);
+    await page.waitForTimeout(700);
+    const noPin = await page.evaluate(() => ({
+      travado: !!window.__zv.inst._scrollLocked,
+      y: Math.round(window.scrollY),
+      estado: window.__zv.inst._globeState,
+    }));
+    const wheel = (d) => page.evaluate((dy) =>
+      window.dispatchEvent(new WheelEvent('wheel', { deltaY: dy, bubbles: true, cancelable: true })), d);
+    for (let k = 0; k < 5; k++) { await wheel(-600); await page.waitForTimeout(480); }
+    const apos = await page.evaluate(() => ({ y: Math.round(window.scrollY), travado: !!window.__zv.inst._scrollLocked }));
+    await page.evaluate(() => window.scrollBy(0, -300));
+    await page.waitForTimeout(600);
+    const fim = await page.evaluate(() => ({
+      y: Math.round(window.scrollY),
+      travado: !!window.__zv.inst._scrollLocked,
+      estado: window.__zv.inst._globeState,
+    }));
+    const s = await page.evaluate(snapshot);
+    s.gTop = Math.round(gTop); s.noPin = noPin; s.aposEsgotar = apos; s.aposSubir = fim;
+    // depois de esgotar para cima a pagina tem de SUBIR, nao ficar presa no pin
+    s.subiuDeFato = fim.y < apos.y - 10 && !fim.travado;
+    s.errors = page.__errors; await page.context().close(); return s;
+  },
 };
 
 // Filtro opcional: node gesture-harness.js <saida> D2,A
